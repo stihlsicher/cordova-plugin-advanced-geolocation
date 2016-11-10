@@ -136,8 +136,8 @@ public final class JSONHelper {
                 json.put("bufferedAccuracy", bufferedAccuracy);
                 Bundle extras = location.getExtras();
                 String exstr = "";
-                for (String key : bundle.keySet()) {
-                    Object value = bundle.get(key);
+                for (String key : extras.keySet()) {
+                    Object value = extras.get(key);
                     exstr += String.format("%s %s (%s)", key, value.toString(), value.getClass().getName());
                     exstr +=" - ";
                 }
