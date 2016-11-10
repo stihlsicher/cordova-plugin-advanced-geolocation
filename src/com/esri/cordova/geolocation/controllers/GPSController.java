@@ -119,7 +119,7 @@ public final class GPSController implements Runnable {
                satelliteListener = setGPSStatusListener();
             }
 
-            if(!gpsListener.success || !satelliteListener.success || !nmeaListener.success){
+            if(!gpsListener.success || !satelliteListener.success || !nmeaListener.success){
                 if(gpsListener.exception == null){
                     // Handle custom error messages
                     sendCallback(PluginResult.Status.ERROR,
