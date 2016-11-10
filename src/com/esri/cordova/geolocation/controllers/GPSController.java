@@ -41,6 +41,7 @@ public final class GPSController implements Runnable {
 
     private static LocationManager _locationManager = null;
     private static LocationListener _locationListenerGPSProvider = null;
+    private static OnNmeaMessageListener _nmeaListener = null;
     private static GpsStatus.Listener _gpsStatusListener = null;
 
     private static CallbackContext _callbackContext; // Threadsafe
@@ -111,13 +112,14 @@ public final class GPSController implements Runnable {
             }
 
             final InitStatus gpsListener = setLocationListenerGPSProvider();
+            final InitStatus nmeaListener = setNMEAProvider();
             InitStatus satelliteListener = new InitStatus();
 
             if(_returnSatelliteData){
                satelliteListener = setGPSStatusListener();
             }
 
-            if(!gpsListener.success || !satelliteListener.success){
+            if(!gpsListener.success || !satelliteListener.success || !nmeaListener.success){
                 if(gpsListener.exception == null){
                     // Handle custom error messages
                     sendCallback(PluginResult.Status.ERROR,
@@ -182,6 +184,18 @@ public final class GPSController implements Runnable {
                 }
 
                 _locationListenerGPSProvider = null;
+            }
+            
+            if(_nmeaListener != null){
+
+                try {
+                    _locationManager.removeUpdates(_nmeaListener);
+                }
+                catch(SecurityException exc){
+                    Log.e(TAG, exc.getMessage());
+                }
+
+                _nmeaListener = null;
             }
 
             _locationManager = null;
@@ -262,6 +276,24 @@ public final class GPSController implements Runnable {
         return status;
     }
 
+    
+    
+    private InitStatus setNMEAProvider(){
+        _nmeaListener = new OnNmeaMessageListener() {
+
+            public void onNmeaMessage(String message, long timestamp) {
+                    sendCallback(PluginResult.Status.OK,
+                            JSONHelper.nmeaJSON("NMEA", message, timestamp));
+               }
+            }
+
+
+        };
+	}
+
+
+
+
     private InitStatus setLocationListenerGPSProvider(){
         _locationListenerGPSProvider = new LocationListener() {
 
@@ -337,6 +369,16 @@ public final class GPSController implements Runnable {
             }
             catch(SecurityException exc){
                 Log.e(TAG, "Unable to start GPS provider. " + exc.getMessage());
+                status.success = false;
+                status.exception = exc.getMessage();
+            }
+            try{
+                Log.d(TAG, "Starting NMEA");
+                // Register the listener with the Location Manager to receive location updates
+                _locationManager.addNmeaListener(_nmeaListener);
+            }
+            catch(SecurityException exc){
+                Log.e(TAG, "Unable to start NMEA listener. " + exc.getMessage());
                 status.success = false;
                 status.exception = exc.getMessage();
             }

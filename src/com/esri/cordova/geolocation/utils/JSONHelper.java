@@ -151,6 +151,19 @@ public final class JSONHelper {
         return json.toString();
     }
 
+    public static String nmeaJSON(String provider,String message,long timestamp) {
+    	final JSONObject json = new JSONObject();
+    	try {
+    		json.put("provider",provider);
+    		json.put("timestamp",timestamp);
+    		json.put("message",message);
+    	} catch (JSONException exc) {
+            logJSONException(exc);
+        }
+    	return json.toString();
+    }
+    
+    
     /**
      * Originates from a change in signal strength
      * @param signalStrength SignalStrength
