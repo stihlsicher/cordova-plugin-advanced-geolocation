@@ -134,7 +134,7 @@ public final class JSONHelper {
                 json.put("bufferedLatitude", bufferLat);
                 json.put("bufferedLongitude", bufferedLon);
                 json.put("bufferedAccuracy", bufferedAccuracy);
-                Bunde extras = location.getExtras();
+                Bundle extras = location.getExtras();
                 String exstr = "";
                 for (String key : bundle.keySet()) {
                     Object value = bundle.get(key);
