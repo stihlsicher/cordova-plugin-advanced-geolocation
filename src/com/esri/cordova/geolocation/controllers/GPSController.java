@@ -285,7 +285,7 @@ public final class GPSController implements Runnable {
                     sendCallback(PluginResult.Status.OK,
                             JSONHelper.nmeaJSON("NMEA", message, timestamp));
                }
-            }
+            
 
 
         };
