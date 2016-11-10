@@ -134,7 +134,14 @@ public final class JSONHelper {
                 json.put("bufferedLatitude", bufferLat);
                 json.put("bufferedLongitude", bufferedLon);
                 json.put("bufferedAccuracy", bufferedAccuracy);
-                json.put("extras", location.getExtras().toString());
+                Bunde extras = location.getExtras();
+                String exstr = "";
+                for (String key : bundle.keySet()) {
+                    Object value = bundle.get(key);
+                    exstr += String.format("%s %s (%s)", key, value.toString(), value.getClass().getName());
+                    exstr +=" - ";
+                }
+                json.put("extras", exstr);
             }
             catch (JSONException exc) {
                 logJSONException(exc);
