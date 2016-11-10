@@ -66,7 +66,7 @@ public final class JSONHelper {
      * @param cached Indicates if the value was pulled from the device cache or not
      * @return Location data. Note: this library returns 0 rather than null to avoid nullPointExceptions
      */
-    public static String locationJSON(String provider, Location location, boolean cached) {
+    public static String locationJSON(String provider, Location location, boolean cached, Bundle extras) {
 
         final JSONObject json = new JSONObject();
 
@@ -107,6 +107,7 @@ public final class JSONHelper {
             String provider,
             Location location,
             boolean cached,
+            Bundle extras,
             boolean buffer,
             double bufferLat,
             double bufferedLon,
@@ -132,6 +133,7 @@ public final class JSONHelper {
                 json.put("bufferedLatitude", bufferLat);
                 json.put("bufferedLongitude", bufferedLon);
                 json.put("bufferedAccuracy", bufferedAccuracy);
+                json.put("extras", extras.toString());
             }
             catch (JSONException exc) {
                 logJSONException(exc);

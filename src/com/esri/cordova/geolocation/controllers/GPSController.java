@@ -263,10 +263,10 @@ public final class GPSController implements Runnable {
     }
 
     private InitStatus setLocationListenerGPSProvider(){
-
         _locationListenerGPSProvider = new LocationListener() {
 
             public void onLocationChanged(Location location) {
+                Bundle extras = location.getExtras();
                 if(_buffer && !Thread.currentThread().isInterrupted()){
                     final Coordinate coordinate = new Coordinate();
                     coordinate.latitude = location.getLatitude();
@@ -283,6 +283,7 @@ public final class GPSController implements Runnable {
                                     LocationManager.GPS_PROVIDER,
                                     location,
                                     false,
+                                    extras,
                                     _buffer,
                                     center.latitude,
                                     center.longitude,
@@ -292,7 +293,8 @@ public final class GPSController implements Runnable {
                 }
                 else {
                     sendCallback(PluginResult.Status.OK,
-                            JSONHelper.locationJSON(LocationManager.GPS_PROVIDER, location, false));
+                            JSONHelper.locationJSON(LocationManager.GPS_PROVIDER, location, false,
+                            extras));
                 }
             }
 
