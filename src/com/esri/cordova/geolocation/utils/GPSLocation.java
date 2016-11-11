@@ -200,18 +200,19 @@ public class GPSLocation {
 			  this.longitude = this.longitude * -1;
 			}
 			
-			this.hdop = mp[8];
+			this.hdop = Float.parseFloat(mp[8]);
 			this.altitude = Float.parseFloat(mp[9]);
 		}
 	}
 	
 	public void parseGSA(String message) {
 		String[] mp = message.split(",");
-		this.fixtype = mp[2];
+		this.fixtype = parseInt(mp[2]);
 		int l = mp.length;
 		this.pdop = Float.parseFloat(mp[l-3]);
 		this.hdop = Float.parseFloat(mp[l-2]);
-		String v = mp[l-1].subString(0,mp[l-1].indexOf("*"));
+		String v = mp[l-1];
+		String vh = v.subString(0,v.indexOf("*"));
 		this.vdop = Float.parseFloat(v);
 	}
 	
