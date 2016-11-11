@@ -47,7 +47,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.time.*;
-import java.lang.*
+import java.lang.*;
 
 /**
  * Threadsafe class for converting location data into JSON
