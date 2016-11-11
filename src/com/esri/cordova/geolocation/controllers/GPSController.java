@@ -294,7 +294,7 @@ public final class GPSController implements Runnable {
         } catch (Exception ex) {
         	
         	status.success = false;
-        	status.error = ex.getMessage();
+        	status.exception = ex.getMessage();
         }
         
         final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
