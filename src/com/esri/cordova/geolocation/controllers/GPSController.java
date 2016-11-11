@@ -34,6 +34,7 @@ import com.esri.cordova.geolocation.model.InitStatus;
 import com.esri.cordova.geolocation.model.LocationDataBuffer;
 import com.esri.cordova.geolocation.utils.ErrorMessages;
 import com.esri.cordova.geolocation.utils.JSONHelper;
+impoer com.esri.cordova.geolocation.utils.GPSLocation;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -58,6 +59,7 @@ public final class GPSController implements Runnable {
     private static boolean _returnCache = false;
     private static boolean _returnSatelliteData = false;
     private static LocationDataBuffer _locationDataBuffer = null;
+    private static GPSLocation gpsloc = new GPSLocation();
 
     private static final String TAG = "GeolocationPlugin";
     private ArrayList<String> nmeaMessages = new ArrayList<String>();
@@ -308,12 +310,36 @@ public final class GPSController implements Runnable {
         		public void onNmeaReceived(long timestamp,String message) {
         			if(!Thread.currentThread().isInterrupted()){
         				try {
-	        				nmeaMessages.add(message);
-	        				if (nmeaMessages.size() > 5) {
-	        					sendCallback(PluginResult.Status.OK,
-	        							JSONHelper.nmeaJSON("NMEA", nmeaMessages, timestamp));
-	        					nmeaMessages.clear();
-	        				}
+        					
+        					/* Parsing NMEA Data to Object */
+        					if (gpsloc.getUTC(message)) {
+        						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
+        							/* Auswerten des Objektes und zurücksenden! */
+        							private String loc = gpsloc.getLocation();
+        							sendCallback(PluginResult.Status.OK,
+    	        							JSONHelper.nmeaJSON("NMEA", nmeaMessages, timestamp));
+        							gpsloc.clear();
+        						} else {
+        							/* Gehört noch zur Serie */
+        							private String mt = gpsloc.messageType().toUpperCase();
+        							switch(mt) {
+        								case "GST":
+        									gpsloc.parseGST(message);
+        									break;
+        								case "GGA":
+        									gpsloc.parseGGA(message);
+        									break;
+        								case "VTG":
+        									gpsloc.parseVST(message);
+        									break;
+        								case "ZDA":
+        									gpsloc.parseZDA(message);
+        									break;
+        								case "GSA":
+        									gpsloc.parseGSA(message);
+        									break;
+        							}
+        						}
 		        		} catch (Exception exc) {
 	        				sendCallback(PluginResult.Status.ERROR,
 	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
