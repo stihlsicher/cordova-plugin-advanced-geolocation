@@ -297,7 +297,7 @@ public final class GPSController implements Runnable {
     
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
-      /*  try {
+      / try {
         	_nmeaListener = new OnNmeaMessageListener() {
         		public void onNmeaMessage(String message, long timestamp) {
         			try {
@@ -326,7 +326,7 @@ public final class GPSController implements Runnable {
         } catch (Exception ex) {   	
         	status.success = false;
         	status.exception = ex.getMessage();
-        } */
+        } 
         
         final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
