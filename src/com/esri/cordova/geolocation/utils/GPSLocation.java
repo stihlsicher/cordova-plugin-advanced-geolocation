@@ -47,6 +47,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.time.*;
+import java.lang.*
 
 /**
  * Threadsafe class for converting location data into JSON
@@ -200,7 +201,7 @@ public class GPSLocation {
 			}
 			
 			this.hdop = mp[8];
-			this.altitude = parseFloat(mp[9]);
+			this.altitude = Float.parseFloat(mp[9]);
 		}
 	}
 	
@@ -208,10 +209,10 @@ public class GPSLocation {
 		String[] mp = message.split(",");
 		this.fixtype = mp[2];
 		int l = mp.length;
-		this.pdop = parseFloat(mp[l-3]);
-		this.hdop = parseFloat(mp[l-2]);
+		this.pdop = Float.parseFloat(mp[l-3]);
+		this.hdop = Float.parseFloat(mp[l-2]);
 		String v = mp[l-1].subString(0,mp[l-1].indexOf("*"));
-		this.vdop = parseFloat(v);
+		this.vdop = Float.parseFloat(v);
 	}
 	
 	public void parseZDA(String message) {
@@ -230,16 +231,16 @@ public class GPSLocation {
 	
     public void parseVTG(String message) {
     	String[] mp = message.split(",");
-    	this.bearing = parseFloat(mp[1]);
-    	this.speed = parseFloat(mp[7]);
+    	this.bearing = Float.parseFloat(mp[1]);
+    	this.speed = Float.parseFloat(mp[7]);
     	this.speed = this.speed / 3.6;
     }
     
     public void parseGST(String message) {
     	String[] mp = message.split(",");
 		this.utc = mp[1];
-    	this.rtk_accuracy = parseFloat(mp[6]);
-    	this.rtk_altitude_accuracy = parseFloat(mp[8]);
+    	this.rtk_accuracy = Float.parseFloat(mp[6]);
+    	this.rtk_altitude_accuracy = Float.parseFloat(mp[8]);
     }
 	
     
