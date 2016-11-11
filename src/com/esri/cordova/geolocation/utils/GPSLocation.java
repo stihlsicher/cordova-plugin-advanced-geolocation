@@ -46,7 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.time.*;
+import javax.time.*;
 import java.lang.*;
 
 /**
@@ -162,6 +162,7 @@ public class GPSLocation {
 			String s = mp[1].substring(hcount+2,hcount+4);
 			String t = mp[1].substring(d+1);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
+			Date currentTime = new Date();
 			String datestr = formatter.format(currentTime);
 			String timestr = datestr+"T"+h+":"+m+":"+s+"Z";
 			Instant instant = Instant.parse( timestr );
@@ -221,11 +222,11 @@ public class GPSLocation {
 		 int len = mp[1].length();
 		 int d = mp[1].indexOf(".");
 		 int hcount = d - 4;
-		 String m = mp[1];
-		 String h = m.substring(0,hcount);
-		 String m = m.substring(hcount,hcount+2);
-		 String s = m.substring(hcount+2,hcount+4);
-		 String t = m.substring(d+1);
+		 String mt = mp[1];
+		 String h = mt.substring(0,hcount);
+		 String m = mt.substring(hcount,hcount+2);
+		 String s = mt.substring(hcount+2,hcount+4);
+		 String t = mt.substring(d+1);
 		String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
 		Instant instant = Instant.parse( timestr );
 		this.timestamp = instant.toEpochMilli();
