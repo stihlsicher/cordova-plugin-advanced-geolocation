@@ -26,6 +26,8 @@
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+            <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
         </config-file>
 
         <config-file target="res/xml/config.xml" parent="/*">
@@ -60,8 +62,8 @@
         <source-file src="src/com/esri/cordova/geolocation/model/Coordinate.java" target-dir="src/com/esri/cordova/geolocation/model" />
         <source-file src="src/com/esri/cordova/geolocation/model/LocationDataBuffer.java" target-dir="src/com/esri/cordova/geolocation/model" />
         <source-file src="src/com/esri/cordova/geolocation/model/StrengthChange.java" target-dir="src/com/esri/cordova/geolocation/model" />
-        <source-file src="src/com/esri/cordova/geolocation/model/Error.java" target-dir="src/com/esri/cordova/geolocation/model" />        
-        
+        <source-file src="src/com/esri/cordova/geolocation/model/Error.java" target-dir="src/com/esri/cordova/geolocation/model" />
+
         <source-file src="src/com/esri/cordova/geolocation/utils/JSONHelper.java" target-dir="src/com/esri/cordova/geolocation/utils" />
         <source-file src="src/com/esri/cordova/geolocation/utils/ErrorMessages.java" target-dir="src/com/esri/cordova/geolocation/utils" />
         <source-file src="src/com/esri/cordova/geolocation/utils/GeodataHelper.java" target-dir="src/com/esri/cordova/geolocation/utils" />

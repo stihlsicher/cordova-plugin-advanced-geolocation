@@ -82,7 +82,7 @@ public final class GPSController implements Runnable {
 
     public void run(){
         // Reference: http://developer.android.com/reference/android/os/Process.html#THREAD_PRIORITY_BACKGROUND
-        //android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
         // We are running a Looper to allow the Cordova CallbackContext to be passed within the Thread as a message.
         if(Looper.myLooper() == null){
@@ -295,14 +295,13 @@ public final class GPSController implements Runnable {
     }
 
     
-    
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
         try {
         	_nmeaListener = new OnNmeaMessageListener() {
         		public void onNmeaMessage(String message, long timestamp) {
         			try {
-	        			if(!Thread.currentThread().isInterrupted()){
+	        		/*	if(!Thread.currentThread().isInterrupted()){
 	        				nmeaMessages.add(message);
 	        				if (nmeaMessages.size() > 100) {
 	        					String ausgabeStr = "[";
@@ -316,7 +315,7 @@ public final class GPSController implements Runnable {
 	        					sendCallback(PluginResult.Status.OK,
 	        							JSONHelper.nmeaJSON("NMEA", ausgabeStr, timestamp));
 	        				}
-	        			} 
+	        			} */
         			} catch (Exception exc) {
         				sendCallback(PluginResult.Status.ERROR,
                                 JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
