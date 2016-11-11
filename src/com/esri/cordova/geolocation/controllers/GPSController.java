@@ -309,7 +309,7 @@ public final class GPSController implements Runnable {
         			if(!Thread.currentThread().isInterrupted()){
         				try {
 	        				nmeaMessages.add(message);
-	        				if (nmeaMessages.size() > 10) {
+	        				if (nmeaMessages.size() > 5) {
 	        					sendCallback(PluginResult.Status.OK,
 	        							JSONHelper.nmeaJSON("NMEA", nmeaMessages, timestamp));
 	        					nmeaMessages.clear();
