@@ -221,10 +221,11 @@ public class GPSLocation {
 		 int len = mp[1].length();
 		 int d = mp[1].indexOf(".");
 		 int hcount = d - 4;
-		 String h = mp[1].subString(0,hcount);
-		 String m = mp[1].subString(hcount,hcount+2);
-		 String s = mp[1].subString(hcount+2,hcount+4);
-		 String t = mp[1].subString(d+1);
+		 String m = mp[1];
+		 String h = m.subString(0,hcount);
+		 String m = m.subString(hcount,hcount+2);
+		 String s = m.subString(hcount+2,hcount+4);
+		 String t = m.subString(d+1);
 		String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
 		Instant instant = Instant.parse( timestr );
 		this.timestamp = instant.toEpochMilli();
