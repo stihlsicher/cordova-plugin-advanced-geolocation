@@ -280,17 +280,41 @@ public final class GPSController implements Runnable {
     
     
     private InitStatus setNMEAProvider(){
-        _nmeaListener = new OnNmeaMessageListener() {
+    	final InitStatus status = new InitStatus();
+        try {
+        	_nmeaListener = new OnNmeaMessageListener() {
 
-            public void onNmeaMessage(String message, long timestamp) {
-                    sendCallback(PluginResult.Status.OK,
+        		public void onNmeaMessage(String message, long timestamp) {
+        			if(!Thread.currentThread().isInterrupted()){
+        				sendCallback(PluginResult.Status.OK,
                             JSONHelper.nmeaJSON("NMEA", message, timestamp));
-               }
-            
+        			} 
+        		}
+        	};
+        } catch (Exception ex) {
+        	
+        	status.success = false;
+        	status.error = ex.getMessage();
+        }
+        
+        final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-
-        };
-        final InitStatus status = new InitStatus();
+        if(gpsProviderEnabled){
+        	try{
+                Log.d(TAG, "Starting NMEA");
+                // Register the listener with the Location Manager to receive location updates
+                _locationManager.addNmeaListener(_nmeaListener);
+            }
+            catch(SecurityException exc){
+                Log.e(TAG, "Unable to start NMEA listener. " + exc.getMessage());
+                status.success = false;
+                status.exception = exc.getMessage();
+            }
+        } else {
+        	status.success = false;
+            status.error = ErrorMessages.GPS_UNAVAILABLE();
+        }
+        
         return status;
 	}
 
@@ -372,16 +396,6 @@ public final class GPSController implements Runnable {
             }
             catch(SecurityException exc){
                 Log.e(TAG, "Unable to start GPS provider. " + exc.getMessage());
-                status.success = false;
-                status.exception = exc.getMessage();
-            }
-            try{
-                Log.d(TAG, "Starting NMEA");
-                // Register the listener with the Location Manager to receive location updates
-                _locationManager.addNmeaListener(_nmeaListener);
-            }
-            catch(SecurityException exc){
-                Log.e(TAG, "Unable to start NMEA listener. " + exc.getMessage());
                 status.success = false;
                 status.exception = exc.getMessage();
             }
