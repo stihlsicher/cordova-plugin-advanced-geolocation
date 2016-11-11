@@ -151,15 +151,15 @@ public class GPSLocation {
 		String[] mp = message.split(",");
 		/* Parsing time if not already set */
 		if (this.timestamp == null) {
-			private int len = mp[1].length();
-			private d = mp[1].indexOf(".");
-			private hcount = d - 4;
-			private string h = mp[1].substring(0,hcount);
-			private string m = mp[1].substring(hcount,hcount+2);
-			private string s = mp[1].substring(hcount+2,hcount+4);
-			private string t = mp[1].substring(d+1);
-			private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
-			private string datestr = formatter.format(currentTime);
+			int len = mp[1].length();
+			d = mp[1].indexOf(".");
+			hcount = d - 4;
+			string h = mp[1].substring(0,hcount);
+			string m = mp[1].substring(hcount,hcount+2);
+			string s = mp[1].substring(hcount+2,hcount+4);
+			string t = mp[1].substring(d+1);
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
+			string datestr = formatter.format(currentTime);
 			String timestr = datestr+"T"+h+":"+m+":"+s+"Z";
 			Instant instant = Instant.parse( timestr );
 			this.timestamp = instant.toEpochMilli();
@@ -205,22 +205,22 @@ public class GPSLocation {
 	public void parseGSA(String message) {
 		String[] mp = message.split(",");
 		this.fixtype = mp[2];
-		private l = mp.length;
+		int l = mp.length;
 		this.pdop = parseFloat(mp[l-3]);
 		this.hdop = parseFloat(mp[l-2]);
-		private string v = mp[l-1].substring(0,mp[l-1].indexOf("*"));
+		string v = mp[l-1].substring(0,mp[l-1].indexOf("*"));
 		this.vdop = parseFloat(v);
 	}
 	
 	public void parseZDA(String message) {
 		String[] mp = message.split(",");
-		private int len = mp[1].length();
-		private d = mp[1].indexOf(".");
-		private hcount = d - 4;
-		private string h = mp[1].substring(0,hcount);
-		private string m = mp[1].substring(hcount,hcount+2);
-		private string s = mp[1].substring(hcount+2,hcount+4);
-		private string t = mp[1].substring(d+1);
+		 int len = mp[1].length();
+		 d = mp[1].indexOf(".");
+		 hcount = d - 4;
+		 string h = mp[1].substring(0,hcount);
+		 string m = mp[1].substring(hcount,hcount+2);
+		 string s = mp[1].substring(hcount+2,hcount+4);
+		 string t = mp[1].substring(d+1);
 		String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
 		Instant instant = Instant.parse( timestr );
 		this.timestamp = instant.toEpochMilli();
