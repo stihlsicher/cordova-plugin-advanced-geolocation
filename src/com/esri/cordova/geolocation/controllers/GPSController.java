@@ -301,21 +301,27 @@ public final class GPSController implements Runnable {
         try {
         	_nmeaListener = new OnNmeaMessageListener() {
         		public void onNmeaMessage(String message, long timestamp) {
-        			if(!Thread.currentThread().isInterrupted()){
-        				nmeaMessages.add(message);
-        				if (nmeaMessages.size() > 30) {
-        					String ausgabeStr = "[";
-        					for(String ausgabe : nmeaMessages)
-        					{
-        						if (!ausgabeStr.equalsIgnoreCase("[")) {
-        							ausgabeStr += ",";
-        						}
-        						ausgabeStr += "'"+ausgabe+"'";
-        					} 
-        					sendCallback(PluginResult.Status.OK,
-        							JSONHelper.nmeaJSON("NMEA", ausgabeStr, timestamp));
-        				}
-        			} 
+        			try {
+	        			if(!Thread.currentThread().isInterrupted()){
+	        				nmeaMessages.add(message);
+	        				if (nmeaMessages.size() > 30) {
+	        					String ausgabeStr = "[";
+	        					for(String ausgabe : nmeaMessages)
+	        					{
+	        						if (!ausgabeStr.equalsIgnoreCase("[")) {
+	        							ausgabeStr += ",";
+	        						}
+	        						ausgabeStr += "'"+ausgabe+"'";
+	        					} 
+	        					sendCallback(PluginResult.Status.OK,
+	        							JSONHelper.nmeaJSON("NMEA", ausgabeStr, timestamp));
+	        				}
+	        			} 
+        			} catch (Exception exc) {
+        				sendCallback(PluginResult.Status.ERROR,
+                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
+                                        + exc.getMessage()));
+        			}
         		}
         	};
         } catch (Exception ex) {   	
