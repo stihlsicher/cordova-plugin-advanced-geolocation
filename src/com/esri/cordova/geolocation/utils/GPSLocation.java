@@ -46,7 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import javax.time.*;
+import java.time.*;
 import java.lang.*;
 
 /**
@@ -143,7 +143,7 @@ public class GPSLocation {
     		json.put("pdop",this.pdop);
     		json.put("fixtype",this.fixtype);
     	} catch (JSONException exc) {
-            logJSONException(exc);
+            //logJSONException(exc);
         }
     	return json.toString();
     }
@@ -153,10 +153,10 @@ public class GPSLocation {
 	public void parseGGA(String message) {
 		String[] mp = message.split(",");
 		/* Parsing time if not already set */
-		if (this.timestamp == null) {
+		if (this.timestamp == 0) {
 			int len = mp[1].length();
-			d = mp[1].indexOf(".");
-			hcount = d - 4;
+			int d = mp[1].indexOf(".");
+			int hcount = d - 4;
 			String h = mp[1].substring(0,hcount);
 			String m = mp[1].substring(hcount,hcount+2);
 			String s = mp[1].substring(hcount+2,hcount+4);
