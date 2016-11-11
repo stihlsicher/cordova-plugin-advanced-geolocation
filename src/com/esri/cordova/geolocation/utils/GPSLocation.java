@@ -53,7 +53,7 @@ import java.time.*;
 /**
  * Threadsafe class for converting location data into JSON
  */
-public final class GPSLocation {
+public class GPSLocation {
 
 	private long timestamp;
 	private float latitude;
