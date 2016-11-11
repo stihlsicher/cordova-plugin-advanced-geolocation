@@ -37,6 +37,7 @@ import com.esri.cordova.geolocation.utils.JSONHelper;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.PluginResult;
+import java.util.ArrayList;
 
 public final class GPSController implements Runnable {
 
@@ -57,6 +58,7 @@ public final class GPSController implements Runnable {
     private static LocationDataBuffer _locationDataBuffer = null;
 
     private static final String TAG = "GeolocationPlugin";
+    private ArrayList<String> nmeaMessages = new ArrayList<String>();
 
     public GPSController(
             CordovaInterface cordova,
@@ -299,8 +301,19 @@ public final class GPSController implements Runnable {
         	_nmeaListener = new OnNmeaMessageListener() {
         		public void onNmeaMessage(String message, long timestamp) {
         			if(!Thread.currentThread().isInterrupted()){
-        				sendCallback(PluginResult.Status.OK,
-                            JSONHelper.nmeaJSON("NMEA", message, timestamp));
+        				nmeaMessages.add(message);
+        				if (nmeaMessages.size() > 30) {
+        					String ausgabeStr = "[";
+        					for(String ausgabe : liste)
+        					{
+        						if (!ausgabeStr.equalsIgnoreCase("[")) {
+        							ausgabeStr += ",";
+        						}
+        						ausgabeStr += "'"+ausgabe+"'";
+        					} 
+        					sendCallback(PluginResult.Status.OK,
+        							JSONHelper.nmeaJSON("NMEA", ausgabeStr, timestamp));
+        				}
         			} 
         		}
         	};
