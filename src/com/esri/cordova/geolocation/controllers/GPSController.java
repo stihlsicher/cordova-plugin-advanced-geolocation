@@ -321,7 +321,7 @@ public final class GPSController implements Runnable {
         							gpsloc.clear();
         						} else {
         							/* Gehört noch zur Serie */
-        							String mt = gpsloc.messageType();
+        							String mt = gpsloc.messageType(message);
         							mt = mt.toUpperCase();
         							switch(mt) {
         								case "GST":
@@ -331,7 +331,7 @@ public final class GPSController implements Runnable {
         									gpsloc.parseGGA(message);
         									break;
         								case "VTG":
-        									gpsloc.parseVST(message);
+        									gpsloc.parseVTG(message);
         									break;
         								case "ZDA":
         									gpsloc.parseZDA(message);

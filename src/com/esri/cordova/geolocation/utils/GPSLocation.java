@@ -124,7 +124,7 @@ public class GPSLocation {
     		if (this.quality < 3) {
     			json.put("provider","gps");
     		}
-    		if (this.qualtiy > 3) {
+    		if (this.quality > 3) {
     			json.put("provider","rtk");
     		}
     		json.put("timestamp",this.timestamp);
