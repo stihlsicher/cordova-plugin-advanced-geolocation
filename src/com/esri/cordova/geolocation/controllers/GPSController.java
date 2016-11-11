@@ -304,7 +304,7 @@ public final class GPSController implements Runnable {
         			try {
 	        			if(!Thread.currentThread().isInterrupted()){
 	        				nmeaMessages.add(message);
-	        				if (nmeaMessages.size() > 30) {
+	        				if (nmeaMessages.size() > 100) {
 	        					String ausgabeStr = "[";
 	        					for(String ausgabe : nmeaMessages)
 	        					{
