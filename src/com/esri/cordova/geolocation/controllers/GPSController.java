@@ -297,11 +297,11 @@ public final class GPSController implements Runnable {
     
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
-        try {
+      /*  try {
         	_nmeaListener = new OnNmeaMessageListener() {
         		public void onNmeaMessage(String message, long timestamp) {
         			try {
-	        		/*	if(!Thread.currentThread().isInterrupted()){
+	        			if(!Thread.currentThread().isInterrupted()){
 	        				nmeaMessages.add(message);
 	        				if (nmeaMessages.size() > 100) {
 	        					String ausgabeStr = "[";
@@ -315,7 +315,7 @@ public final class GPSController implements Runnable {
 	        					sendCallback(PluginResult.Status.OK,
 	        							JSONHelper.nmeaJSON("NMEA", ausgabeStr, timestamp));
 	        				}
-	        			} */
+	        			} 
         			} catch (Exception exc) {
         				sendCallback(PluginResult.Status.ERROR,
                                 JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
@@ -326,7 +326,7 @@ public final class GPSController implements Runnable {
         } catch (Exception ex) {   	
         	status.success = false;
         	status.exception = ex.getMessage();
-        }
+        } */
         
         final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
@@ -334,7 +334,7 @@ public final class GPSController implements Runnable {
         	try{
                 Log.d(TAG, "Starting NMEA");
                 // Register the listener with the Location Manager to receive location updates
-                _locationManager.addNmeaListener(_nmeaListener);
+            //    _locationManager.addNmeaListener(_nmeaListener);
             }
             catch(SecurityException exc){
                 Log.e(TAG, "Unable to start NMEA listener. " + exc.getMessage());
