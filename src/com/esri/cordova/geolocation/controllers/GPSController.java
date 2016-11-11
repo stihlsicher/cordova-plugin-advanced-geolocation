@@ -290,6 +290,8 @@ public final class GPSController implements Runnable {
 
 
         };
+        final InitStatus status = new InitStatus();
+        return status;
 	}
 
 
