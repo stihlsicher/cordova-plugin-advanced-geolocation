@@ -117,7 +117,8 @@ public final class GPSController implements Runnable {
             }
 
             final InitStatus gpsListener = setLocationListenerGPSProvider();
-            final InitStatus nmeaListener = new InitStatus(); // setNMEAProvider();
+            //final InitStatus nmeaListener = new InitStatus(); // setNMEAProvider();
+            final InitStatus nmeaListener = setNMEAProvider();
             InitStatus satelliteListener = new InitStatus();
 
             if(_returnSatelliteData){
