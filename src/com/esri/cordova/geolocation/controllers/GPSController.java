@@ -24,6 +24,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.location.OnNmeaMessageListener;
+import android.location.GpsStatus.NmeaListener;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -44,6 +45,7 @@ public final class GPSController implements Runnable {
     private static LocationManager _locationManager = null;
     private static LocationListener _locationListenerGPSProvider = null;
     private static OnNmeaMessageListener _nmeaListener = null;
+    private static GpsStatus.NmeaListener _nmeaStatusListener = null;
     private static GpsStatus.Listener _gpsStatusListener = null;
 
     private static CallbackContext _callbackContext; // Threadsafe
@@ -118,7 +120,9 @@ public final class GPSController implements Runnable {
 
             final InitStatus gpsListener = setLocationListenerGPSProvider();
             //final InitStatus nmeaListener = new InitStatus(); // setNMEAProvider();
-            final InitStatus nmeaListener = setNMEAProvider();
+          //  final InitStatus nmeaListener = setNMEAProvider();
+            final InitStatus nmeaListener = setNMEAListener();
+            
             InitStatus satelliteListener = new InitStatus();
 
             if(_returnSatelliteData){
@@ -294,6 +298,62 @@ public final class GPSController implements Runnable {
         return status;
     }
 
+    
+    
+    private InitStatus setNMEAListener(){
+    	final InitStatus status = new InitStatus();
+       try {
+    	   _nmeaStatusListener = new GpsStatus.NmeaListener() {
+        		
+        		public void onNmeaReceived(long timestamp,String message) {
+        		//	if(!Thread.currentThread().isInterrupted()){
+        				try {
+	        				nmeaMessages.add(message);
+	        				if (nmeaMessages.size() > 100) {
+	        					String ausgabeStr = "[";
+	        					for(String ausgabe : nmeaMessages)
+	        					{
+	        						if (!ausgabeStr.equalsIgnoreCase("[")) {
+	        							ausgabeStr += ",";
+	        						}
+	        						ausgabeStr += "'"+ausgabe+"'";
+	        					} 
+	        					sendCallback(PluginResult.Status.OK,
+	        							JSONHelper.nmeaJSON("NMEA", ausgabeStr, timestamp));
+	        				}
+		        		} catch (Exception exc) {
+	        				sendCallback(PluginResult.Status.ERROR,
+	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
+	                                        + exc.getMessage()));
+	        			}
+        		//	}
+        		}
+        	};
+        } catch (Exception ex) {   	
+        	status.success = false;
+        	status.exception = ex.getMessage();
+        } 
+        
+        final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if(gpsProviderEnabled){
+        	try{
+                Log.d(TAG, "Starting NMEA");
+                // Register the listener with the Location Manager to receive location updates
+                _locationManager.addNmeaListener(_nmeaStatusListener);
+            }
+            catch(SecurityException exc){
+                Log.e(TAG, "Unable to start NMEA listener. " + exc.getMessage());
+                status.success = false;
+                status.exception = exc.getMessage();
+            }
+        } else {
+        	status.success = false;
+            status.error = ErrorMessages.GPS_UNAVAILABLE();
+        }
+        
+        return status;
+	}
     
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
