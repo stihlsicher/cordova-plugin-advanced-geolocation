@@ -34,7 +34,7 @@ import com.esri.cordova.geolocation.model.InitStatus;
 import com.esri.cordova.geolocation.model.LocationDataBuffer;
 import com.esri.cordova.geolocation.utils.ErrorMessages;
 import com.esri.cordova.geolocation.utils.JSONHelper;
-impoer com.esri.cordova.geolocation.utils.GPSLocation;
+import com.esri.cordova.geolocation.utils.GPSLocation;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
