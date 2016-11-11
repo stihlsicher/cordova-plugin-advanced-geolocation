@@ -98,8 +98,8 @@ public class GPSLocation {
 	}
 	
 	public String messageType(String message) {
-		if (message.substring(0,2).equalsIgnoreCase("$G")) {
-			return message.substring(3,6);
+		if (message.subString(0,2).equalsIgnoreCase("$G")) {
+			return message.subString(3,6);
 		}
 	}
 	
@@ -112,7 +112,7 @@ public class GPSLocation {
 		return null;
 	}
 	
-	public string getLocation() {
+	public String getLocation() {
     	final JSONObject json = new JSONObject();
     	try {
     		if (this.quality == 0) {
@@ -154,12 +154,12 @@ public class GPSLocation {
 			int len = mp[1].length();
 			d = mp[1].indexOf(".");
 			hcount = d - 4;
-			string h = mp[1].substring(0,hcount);
-			string m = mp[1].substring(hcount,hcount+2);
-			string s = mp[1].substring(hcount+2,hcount+4);
-			string t = mp[1].substring(d+1);
+			String h = mp[1].subString(0,hcount);
+			String m = mp[1].subString(hcount,hcount+2);
+			String s = mp[1].subString(hcount+2,hcount+4);
+			String t = mp[1].subString(d+1);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
-			string datestr = formatter.format(currentTime);
+			String datestr = formatter.format(currentTime);
 			String timestr = datestr+"T"+h+":"+m+":"+s+"Z";
 			Instant instant = Instant.parse( timestr );
 			this.timestamp = instant.toEpochMilli();
@@ -169,9 +169,9 @@ public class GPSLocation {
 		if (this.quality > 0) {
 			
 			/* Parsing Latitude */
-			String lat_deg = mp[2].substring(0, 2);
-			String lat_min1 = mp[2].substring(2, 4);
-			String lat_min2 = mp[2].substring(5);
+			String lat_deg = mp[2].subString(0, 2);
+			String lat_min1 = mp[2].subString(2, 4);
+			String lat_min2 = mp[2].subString(5);
 			String lat_min3 = "0." + lat_min1 + lat_min2;
 			float lat_dec = Float.parseFloat(lat_min3)/.6f;
 			this.latitude = Float.parseFloat(lat_deg) + lat_dec;
@@ -184,9 +184,9 @@ public class GPSLocation {
 			}
 			
 			/* Parsing longitude */
-			String lon_deg = mp[4].substring(0, 3);
-			String lon_min1 = mp[4].substring(3, 5);
-			String lon_min2 = mp[4].substring(6);
+			String lon_deg = mp[4].subString(0, 3);
+			String lon_min1 = mp[4].subString(3, 5);
+			String lon_min2 = mp[4].subString(6);
 			String lon_min3 = "0." + lon_min1 + lon_min2;
 			float lon_dec = Float.parseFloat(lon_min3)/.6f;
 			this.longitude = Float.parseFloat(lon_deg) + lon_dec;
@@ -208,7 +208,7 @@ public class GPSLocation {
 		int l = mp.length;
 		this.pdop = parseFloat(mp[l-3]);
 		this.hdop = parseFloat(mp[l-2]);
-		string v = mp[l-1].substring(0,mp[l-1].indexOf("*"));
+		String v = mp[l-1].subString(0,mp[l-1].indexOf("*"));
 		this.vdop = parseFloat(v);
 	}
 	
@@ -217,10 +217,10 @@ public class GPSLocation {
 		 int len = mp[1].length();
 		 d = mp[1].indexOf(".");
 		 hcount = d - 4;
-		 string h = mp[1].substring(0,hcount);
-		 string m = mp[1].substring(hcount,hcount+2);
-		 string s = mp[1].substring(hcount+2,hcount+4);
-		 string t = mp[1].substring(d+1);
+		 String h = mp[1].subString(0,hcount);
+		 String m = mp[1].subString(hcount,hcount+2);
+		 String s = mp[1].subString(hcount+2,hcount+4);
+		 String t = mp[1].subString(d+1);
 		String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
 		Instant instant = Instant.parse( timestr );
 		this.timestamp = instant.toEpochMilli();
