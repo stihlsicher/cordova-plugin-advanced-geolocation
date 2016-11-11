@@ -305,7 +305,7 @@ public final class GPSController implements Runnable {
         				nmeaMessages.add(message);
         				if (nmeaMessages.size() > 30) {
         					String ausgabeStr = "[";
-        					for(String ausgabe : liste)
+        					for(String ausgabe : nmeaMessages)
         					{
         						if (!ausgabeStr.equalsIgnoreCase("[")) {
         							ausgabeStr += ",";
