@@ -297,7 +297,7 @@ public final class GPSController implements Runnable {
     
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
-      / try {
+       try {
         	_nmeaListener = new OnNmeaMessageListener() {
         		public void onNmeaMessage(String message, long timestamp) {
         			try {
