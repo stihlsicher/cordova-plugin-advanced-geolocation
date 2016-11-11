@@ -75,22 +75,22 @@ public class GPSLocation {
 	}
 	
 	public void clear() {
-		timestamp = null;
-		latitude = null;
-		longitude = null;
-		quality = null;
-		accuracy = null;
-		speed = null;
-		bearing = null;
-		altitude = null;
-		altitude_accuracy = null;
-		rtk_accuracy = null;
-		rtk_altitude_accuracy = null;
-		pdop = null;
-		hdop = null;
-		vdop = null;
-		fixtype = null;
-		utc = null;
+		timestamp = 0;
+		latitude = 0;
+		longitude = 0;
+		quality = 0;
+		accuracy = 0;
+		speed = 0;
+		bearing = 0;
+		altitude = 0;
+		altitude_accuracy = 0;
+		rtk_accuracy = 0;
+		rtk_altitude_accuracy = 0;
+		pdop = 0;
+		hdop = 0;
+		vdop = 0;
+		fixtype = 1;
+		utc = "";
 	}
 	
 	public boolean checkUTC(String utc_chk) {
