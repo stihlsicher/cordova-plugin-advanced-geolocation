@@ -315,9 +315,9 @@ public final class GPSController implements Runnable {
         					if (gpsloc.getUTC(message)) {
         						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
         							/* Auswerten des Objektes und zurücksenden! */
-        							private String loc = gpsloc.getLocation();
+        							String loc = gpsloc.getLocation();
         							sendCallback(PluginResult.Status.OK,
-    	        							JSONHelper.nmeaJSON("NMEA", nmeaMessages, timestamp));
+    	        							JSONHelper.nmeaJSON("NMEA", loc, timestamp));
         							gpsloc.clear();
         						} else {
         							/* Gehört noch zur Serie */
@@ -340,6 +340,7 @@ public final class GPSController implements Runnable {
         									break;
         							}
         						}
+        					}
 		        		} catch (Exception exc) {
 	        				sendCallback(PluginResult.Status.ERROR,
 	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
