@@ -40,8 +40,6 @@ import android.telephony.SignalStrength;
 import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
-import org.joda.time.DateTime;
-
 import com.esri.cordova.geolocation.model.Error;
 
 import org.json.JSONException;
