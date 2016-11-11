@@ -306,27 +306,19 @@ public final class GPSController implements Runnable {
     	   _nmeaStatusListener = new GpsStatus.NmeaListener() {
         		
         		public void onNmeaReceived(long timestamp,String message) {
-        		//	if(!Thread.currentThread().isInterrupted()){
+        			if(!Thread.currentThread().isInterrupted()){
         				try {
-/*	        				nmeaMessages.add(message);
+	        				nmeaMessages.add(message);
 	        				if (nmeaMessages.size() > 100) {
-	        					String ausgabeStr = "[";
-	        					for(String ausgabe : nmeaMessages)
-	        					{
-	        						if (!ausgabeStr.equalsIgnoreCase("[")) {
-	        							ausgabeStr += ",";
-	        						}
-	        						ausgabeStr += "'"+ausgabe+"'";
-	        					} */
 	        					sendCallback(PluginResult.Status.OK,
-	        							JSONHelper.nmeaJSON("NMEA", message, timestamp));
-	        				//}
+	        							JSONHelper.nmeaJSON("NMEA", nmeaMessages, timestamp));
+	        				}
 		        		} catch (Exception exc) {
 	        				sendCallback(PluginResult.Status.ERROR,
 	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
 	                                        + exc.getMessage()));
 	        			}
-        		//	}
+        			}
         		}
         	};
         } catch (Exception ex) {   	

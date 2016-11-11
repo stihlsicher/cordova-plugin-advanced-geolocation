@@ -17,6 +17,7 @@
 package com.esri.cordova.geolocation.utils;
 
 import android.location.GpsSatellite;
+import java.util.ArrayList;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
@@ -162,7 +163,19 @@ public final class JSONHelper {
         }
     	return json.toString();
     }
+
     
+    public static String nmeaJSON(String provider,ArrayList message,long timestamp) {
+    	final JSONObject json = new JSONObject();
+    	try {
+    		json.put("provider",provider);
+    		json.put("timestamp",timestamp);
+    		json.put("message",message);
+    	} catch (JSONException exc) {
+            logJSONException(exc);
+        }
+    	return json.toString();
+    }
     
     /**
      * Originates from a change in signal strength
