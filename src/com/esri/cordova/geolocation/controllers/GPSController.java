@@ -82,7 +82,7 @@ public final class GPSController implements Runnable {
 
     public void run(){
         // Reference: http://developer.android.com/reference/android/os/Process.html#THREAD_PRIORITY_BACKGROUND
-        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        //android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
         // We are running a Looper to allow the Cordova CallbackContext to be passed within the Thread as a message.
         if(Looper.myLooper() == null){
