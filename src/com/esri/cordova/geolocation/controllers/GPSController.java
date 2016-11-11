@@ -121,15 +121,27 @@ public final class GPSController implements Runnable {
             }
 
             if(!gpsListener.success || !satelliteListener.success || !nmeaListener.success){
-                if(gpsListener.exception == null){
-                    // Handle custom error messages
-                    sendCallback(PluginResult.Status.ERROR,
-                            JSONHelper.errorJSON(LocationManager.GPS_PROVIDER, gpsListener.error));
+                if (!nmeaListener.success) {
+	            	if (nmeaListener.exception == null) {
+	                	sendCallback(PluginResult.Status.ERROR,
+	                            JSONHelper.errorJSON("NMEA", nmeaListener.error));
+	                }else {
+	                    // Handle system exceptions
+	                    sendCallback(PluginResult.Status.ERROR,
+	                            JSONHelper.errorJSON("NMEA", nmeaListener.exception));
+	                }
                 }
-                else {
-                    // Handle system exceptions
-                    sendCallback(PluginResult.Status.ERROR,
-                            JSONHelper.errorJSON(LocationManager.GPS_PROVIDER, gpsListener.exception));
+                if (!gpsListener.success) {
+	            	if(gpsListener.exception == null){
+	                    // Handle custom error messages
+	                    sendCallback(PluginResult.Status.ERROR,
+	                            JSONHelper.errorJSON(LocationManager.GPS_PROVIDER, gpsListener.error));
+	                }
+	                else {
+	                    // Handle system exceptions
+	                    sendCallback(PluginResult.Status.ERROR,
+	                            JSONHelper.errorJSON(LocationManager.GPS_PROVIDER, gpsListener.exception));
+	                }
                 }
             }
             else {
@@ -283,7 +295,6 @@ public final class GPSController implements Runnable {
     	final InitStatus status = new InitStatus();
         try {
         	_nmeaListener = new OnNmeaMessageListener() {
-
         		public void onNmeaMessage(String message, long timestamp) {
         			if(!Thread.currentThread().isInterrupted()){
         				sendCallback(PluginResult.Status.OK,
@@ -291,8 +302,7 @@ public final class GPSController implements Runnable {
         			} 
         		}
         	};
-        } catch (Exception ex) {
-        	
+        } catch (Exception ex) {   	
         	status.success = false;
         	status.exception = ex.getMessage();
         }
