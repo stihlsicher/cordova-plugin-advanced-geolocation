@@ -104,8 +104,8 @@ public final class GPSController implements Runnable {
                     Log.e(TAG, "Failing gracefully after detecting an uncaught exception on GPSController thread. "
                         + throwable.getMessage());
                     sendCallback(PluginResult.Status.ERROR,
-                            JSONHelper.errorJSON("TEST", "Failing gracefully after detecting an uncaught exception on GPSController thread. "
-                                    + throwable.getMessage()));
+                            JSONHelper.errorJSON("TEST", "Failing gracefully after detecting an uncaught exception on GPSController thread. "+ thread.toString() + " - "
+                                    + throwable.getMessage()+"Stacktrace: "+throwable.getStackTrace().toString()));
                   /*  sendCallback(PluginResult.Status.ERROR,
                             JSONHelper.errorJSON(LocationManager.GPS_PROVIDER, ErrorMessages.UNCAUGHT_THREAD_EXCEPTION()));*/
                     stopLocation();
