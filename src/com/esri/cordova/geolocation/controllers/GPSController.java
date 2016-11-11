@@ -190,7 +190,7 @@ public final class GPSController implements Runnable {
             if(_nmeaListener != null){
 
                 try {
-                    _locationManager.removeUpdates(_nmeaListener);
+                    _locationManager.removeNmeaListener(_nmeaListener);
                 }
                 catch(SecurityException exc){
                     Log.e(TAG, exc.getMessage());
