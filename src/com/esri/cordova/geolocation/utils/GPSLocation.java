@@ -218,8 +218,8 @@ public class GPSLocation {
 	public void parseZDA(String message) {
 		String[] mp = message.split(",");
 		 int len = mp[1].length();
-		 d = mp[1].indexOf(".");
-		 hcount = d - 4;
+		 int d = mp[1].indexOf(".");
+		 int hcount = d - 4;
 		 String h = mp[1].subString(0,hcount);
 		 String m = mp[1].subString(hcount,hcount+2);
 		 String s = mp[1].subString(hcount+2,hcount+4);
