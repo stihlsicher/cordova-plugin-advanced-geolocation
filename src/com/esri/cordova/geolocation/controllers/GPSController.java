@@ -312,7 +312,7 @@ public final class GPSController implements Runnable {
         				try {
         					
         					/* Parsing NMEA Data to Object */
-        					if (gpsloc.getUTC(message)) {
+        					if (gpsloc.getUTC(message)==null) {
         						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
         							/* Auswerten des Objektes und zurücksenden! */
         							String loc = gpsloc.getLocation();
@@ -321,7 +321,8 @@ public final class GPSController implements Runnable {
         							gpsloc.clear();
         						} else {
         							/* Gehört noch zur Serie */
-        							String mt = gpsloc.messageType().toUpperCase();
+        							String mt = gpsloc.messageType();
+        							mt = mt.toUpperCase();
         							switch(mt) {
         								case "GST":
         									gpsloc.parseGST(message);

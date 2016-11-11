@@ -100,6 +100,8 @@ public class GPSLocation {
 	public String messageType(String message) {
 		if (message.subString(0,2).equalsIgnoreCase("$G")) {
 			return message.subString(3,6);
+		} else {
+			return "NONE";
 		}
 	}
 	
