@@ -328,11 +328,13 @@ public final class GPSController implements Runnable {
         							String mt = null;
         							try {
         								mt = gpsloc.messageType(message);
-        							} catch (Exception exc) {
+            							parsedTypes.add(mt);
+            						} catch (Exception exc) {
         								sendCallback(PluginResult.Status.ERROR,
         		                                JSONHelper.errorJSON("NMEA", "Could not get Message type"
 	                                        + exc.getMessage() + "- "+message));
         							}
+
         							try {
         								if (mt != null && !mt.isEmpty()) {
 	        								mt = mt.toUpperCase();

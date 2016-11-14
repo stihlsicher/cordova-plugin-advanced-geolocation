@@ -256,6 +256,7 @@ public class GPSLocation {
 				}
 				if (!mp[8].isEmpty()) {
 					this.hdop = Float.parseFloat(mp[8]);
+					this.accuracy = Float.parseFloat(mp[8]);
 				}
 				if (!mp[9].isEmpty()) {
 					this.altitude = Float.parseFloat(mp[9]);
