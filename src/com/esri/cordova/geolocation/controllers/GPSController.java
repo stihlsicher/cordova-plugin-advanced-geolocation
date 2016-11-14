@@ -318,6 +318,8 @@ public final class GPSController implements Runnable {
         						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
         							/* Auswerten des Objektes und zurücksenden! */
         							String loc = gpsloc.getLocation(parsingErrors, parsedTypes);
+        							parsingErrors = new ArrayList<String>();
+        							parsedTypes = new ArrayList<String>();
         							sendCallback(PluginResult.Status.OK,
     	        							JSONHelper.nmeaJSON("NMEA", loc, timestamp));
         							gpsloc.clear();
