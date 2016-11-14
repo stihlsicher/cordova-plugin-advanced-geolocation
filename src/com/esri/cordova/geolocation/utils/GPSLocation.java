@@ -271,8 +271,11 @@ public class GPSLocation {
 			}
 			if (!mp[l-1].isEmpty()) {
 				String v = mp[l-1];
-				String vh = v.substring(0,v.indexOf("*"));
-				this.vdop = Float.parseFloat(v);
+				int astpos = v.indexOf("*");
+				if (astpos > 0) {
+					String vh = v.substring(0,astpos);
+					this.vdop = Float.parseFloat(v);
+				}
 			}
 		} catch (Exception exc) {
 			this.error = true;
@@ -332,8 +335,11 @@ public class GPSLocation {
 	    	}
 	    	if (!mp[8].isEmpty()) {
 	    		String mt = mp[8];
-	    		mt = mt.substring(0,mt.indexOf("*"));
-	    		this.rtk_altitude_accuracy = Float.parseFloat(mt);
+	    		var astpos = mt.indexOf("*");
+	    		if (astpos > 0 ) {
+	    			mt = mt.substring(0,);
+	    			this.rtk_altitude_accuracy = Float.parseFloat(mt);
+	    		}
 	    	}
 		} catch (Exception exc) {
 			this.error = true;
