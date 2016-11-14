@@ -71,6 +71,8 @@ public class AdvancedGeolocation extends CordovaPlugin{
     private static String _providers;
     private static boolean _useCache;
     private static boolean _returnSatelliteData = false;
+    private static boolean _returnNMEAData = false;
+    private static boolean _returnLocationData = false;
     private static boolean _buffer = false;
     private static boolean _signalStrength = false;
     private static int _bufferSize = 0;
