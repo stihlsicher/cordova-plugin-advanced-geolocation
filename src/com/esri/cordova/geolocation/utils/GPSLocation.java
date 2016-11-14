@@ -159,6 +159,7 @@ public class GPSLocation {
 			int len = mp[1].length();
 			int d = mp[1].indexOf(".");
 			int hcount = d - 4;
+			String mt = mp[1];
 			int h = Integer.parseInt(mt.substring(0,hcount));
 			int m = Integer.parseInt(mt.substring(hcount,hcount+2));
 			int s = Integer.parseInt(mt.substring(hcount+2,hcount+4));
@@ -234,7 +235,7 @@ public class GPSLocation {
 		int day = Integer.parseInt(mp[2]);
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 		Date currentTime = new Date();
-		Date result =  Date.UTC(year, month, Interger.day, h, m, s);
+		Date result =  Date.UTC(year, month, day, h, m, s);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(result);
 		this.timestamp = calendar.getTimeInMillis();
