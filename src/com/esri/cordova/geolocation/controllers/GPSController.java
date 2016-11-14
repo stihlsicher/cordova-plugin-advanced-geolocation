@@ -58,6 +58,8 @@ public final class GPSController implements Runnable {
     private static int _bufferSize = 0;
     private static boolean _returnCache = false;
     private static boolean _returnSatelliteData = false;
+    private static boolean _returnNMEAData = false;
+    private static boolean _returnLocationData = false;
     private static LocationDataBuffer _locationDataBuffer = null;
     private static GPSLocation gpsloc = new GPSLocation();
 
@@ -73,6 +75,8 @@ public final class GPSController implements Runnable {
             long minTime,
             boolean returnCache,
             boolean returnSatelliteData,
+            boolean returnNMEAData,
+            boolean returnLocationData
             boolean buffer,
             int bufferSize
     ){
@@ -84,6 +88,8 @@ public final class GPSController implements Runnable {
         _returnSatelliteData = returnSatelliteData;
         _buffer = buffer;
         _bufferSize = bufferSize;
+        _returnNMEAData = returnNMEAData;
+        _returnLocationData = returnLocationData;
     }
 
     public void run(){
@@ -125,10 +131,12 @@ public final class GPSController implements Runnable {
             final InitStatus gpsListener = setLocationListenerGPSProvider();
             //final InitStatus nmeaListener = new InitStatus(); // setNMEAProvider();
           //  final InitStatus nmeaListener = setNMEAProvider();
-            final InitStatus nmeaListener = setNMEAListener();
+            InitStatus nmeaListener = new InitStatus();
+            if (_returnNMEAData) {
+            	nmeaListener = setNMEAListener();
+            }
             
             InitStatus satelliteListener = new InitStatus();
-
             if(_returnSatelliteData){
                satelliteListener = setGPSStatusListener();
             }
@@ -303,7 +311,7 @@ public final class GPSController implements Runnable {
     }
 
     
-    
+    /* Android 5x */
     private InitStatus setNMEAListener(){
     	final InitStatus status = new InitStatus();
        try {
@@ -410,6 +418,7 @@ public final class GPSController implements Runnable {
         return status;
 	}
     
+    /* Für Android 6) */
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
        try {
@@ -472,32 +481,34 @@ public final class GPSController implements Runnable {
         _locationListenerGPSProvider = new LocationListener() {
 
             public void onLocationChanged(Location location) {
-                if(_buffer && !Thread.currentThread().isInterrupted()){
-                    final Coordinate coordinate = new Coordinate();
-                    coordinate.latitude = location.getLatitude();
-                    coordinate.longitude = location.getLongitude();
-                    coordinate.accuracy = location.getAccuracy();
-
-                    // Get the size of the buffer
-                    final int size = _locationDataBuffer.add(coordinate);
-
-                    final Coordinate center = _locationDataBuffer.getGeographicCenter();
-
-                    sendCallback(PluginResult.Status.OK,
-                            JSONHelper.locationJSON(
-                                    LocationManager.GPS_PROVIDER,
-                                    location,
-                                    false,
-                                    _buffer,
-                                    center.latitude,
-                                    center.longitude,
-                                    center.accuracy,
-                                    size)
-                    );
-                }
-                else {
-                    sendCallback(PluginResult.Status.OK,
-                            JSONHelper.locationJSON(LocationManager.GPS_PROVIDER, location, false));
+                if (_returnLocationData) {
+	                if(_buffer && !Thread.currentThread().isInterrupted()){
+	                    final Coordinate coordinate = new Coordinate();
+	                    coordinate.latitude = location.getLatitude();
+	                    coordinate.longitude = location.getLongitude();
+	                    coordinate.accuracy = location.getAccuracy();
+	
+	                    // Get the size of the buffer
+	                    final int size = _locationDataBuffer.add(coordinate);
+	
+	                    final Coordinate center = _locationDataBuffer.getGeographicCenter();
+	                    sendCallback(PluginResult.Status.OK,
+	                            JSONHelper.locationJSON(
+	                                    LocationManager.GPS_PROVIDER,
+	                                    location,
+	                                    false,
+	                                    _buffer,
+	                                    center.latitude,
+	                                    center.longitude,
+	                                    center.accuracy,
+	                                    size)
+	                    );
+	                
+	                }
+	                else {
+	                    sendCallback(PluginResult.Status.OK,
+	                            JSONHelper.locationJSON(LocationManager.GPS_PROVIDER, location, false));
+	                }
                 }
             }
 

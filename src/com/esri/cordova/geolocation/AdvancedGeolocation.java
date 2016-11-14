@@ -243,7 +243,7 @@ public class AdvancedGeolocation extends CordovaPlugin{
 
         if(_providers.equalsIgnoreCase(PROVIDERS_ALL)){
             _gpsController = new GPSController(
-                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _buffer, _bufferSize);
+                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _returnNMEAData, _returnLocationData, _buffer, _bufferSize);
             threadPool.execute(_gpsController);
 
             _networkLocationController = new NetworkLocationController(
@@ -262,7 +262,7 @@ public class AdvancedGeolocation extends CordovaPlugin{
         }
         if(_providers.equalsIgnoreCase(PROVIDERS_SOME)){
             _gpsController = new GPSController(
-                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _buffer, _bufferSize);
+                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _returnNMEAData, _returnLocationData, _buffer, _bufferSize);
             threadPool.execute(_gpsController);
 
             _networkLocationController = new NetworkLocationController(
@@ -272,7 +272,7 @@ public class AdvancedGeolocation extends CordovaPlugin{
         }
         if(_providers.equalsIgnoreCase(PROVIDERS_GPS)){
             _gpsController = new GPSController(
-                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _buffer, _bufferSize);
+                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _returnNMEAData, _returnLocationData, _buffer, _bufferSize);
             threadPool.execute(_gpsController);
         }
         if(_providers.equalsIgnoreCase(PROVIDERS_NETWORK)){
@@ -514,6 +514,8 @@ public class AdvancedGeolocation extends CordovaPlugin{
                 _noWarn = obj.getBoolean("noWarn");
                 _providers = obj.getString("providers");
                 _useCache = obj.getBoolean("useCache");
+                _returnNMEAData = obj.getBoolean("nmeaData");
+                _returnLocationData = obj.getBoolean("locationData");
                 _returnSatelliteData = obj.getBoolean("satelliteData");
                 _buffer = obj.getBoolean("buffer");
                 _signalStrength = obj.getBoolean("signalStrength");
