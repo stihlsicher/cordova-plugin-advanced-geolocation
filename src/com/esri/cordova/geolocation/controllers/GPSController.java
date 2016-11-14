@@ -76,7 +76,7 @@ public final class GPSController implements Runnable {
             boolean returnCache,
             boolean returnSatelliteData,
             boolean returnNMEAData,
-            boolean returnLocationData
+            boolean returnLocationData,
             boolean buffer,
             int bufferSize
     ){
