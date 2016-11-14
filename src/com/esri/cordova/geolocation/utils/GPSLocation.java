@@ -110,7 +110,7 @@ public class GPSLocation {
 	}
 	
 	public boolean checkUTC(String utc_chk) {
-		if (this.utc != null && !this.utc.isEmtpy()) {
+		if (this.utc != null && !(this.utc).isEmtpy()) {
 			return this.utc.equalsIgnoreCase(utc_chk);
 		} else {
 			return true;
@@ -128,7 +128,7 @@ public class GPSLocation {
 	public String getUTC(String message) {
 		String mt = null;
 		try {
-			String mt = this.messageType(message);
+			mt = this.messageType(message);
 		} catch (Exception e) {
 			this.error = true;
 			this.errorMessage = e.getMessage();
