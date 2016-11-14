@@ -125,7 +125,7 @@ public class GPSLocation {
 	}
 	
 	public String messageType(String message) {
-		mtypes.add(message);
+		mtypes.add(message.substring(0,6));
 		if (message.substring(0,2).equalsIgnoreCase("$G")) {
 			return message.substring(3,6);
 		} else {
