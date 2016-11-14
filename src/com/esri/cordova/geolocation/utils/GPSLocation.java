@@ -106,7 +106,7 @@ public class GPSLocation {
 		String e = this.errorMessage;
 		this.errorMessage = null;
 		this.error = false;
-		return this.e;
+		return e;
 	}
 	
 	public boolean checkUTC(String utc_chk) {

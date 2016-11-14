@@ -330,8 +330,8 @@ public final class GPSController implements Runnable {
 	                                        + exc.getMessage() + "- "+message));
         							}
         							try {
-	        							mt = mt.toUpperCase();
-	        							if (!mt.isEmpty()) {
+        								if (!mt.isEmpty()) {
+	        								mt = mt.toUpperCase();
 		        							if (mt.equalsIgnoreCase("GST")) {
 		        									gpsloc.parseGST(message);
 		        							} else if (mt.equalsIgnoreCase("GGA")) {
