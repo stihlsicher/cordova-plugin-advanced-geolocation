@@ -321,18 +321,32 @@ public final class GPSController implements Runnable {
         							gpsloc.clear();
         						} else {
         							/* Gehört noch zur Serie */
-        							String mt = gpsloc.messageType(message);
+        							try {
+        								String mt = gpsloc.messageType(message);
+        							} catch (Exception e) {
+        								sendCallback(PluginResult.Status.ERROR,
+        		                                JSONHelper.errorJSON("NMEA", "Could not get Message type"
+	                                        + exc.getMessage() + "- "+message));
+        							}
+        							try {
         							mt = mt.toUpperCase();
-        							if (mt.equalsIgnoreCase("GST")) {
-        									gpsloc.parseGST(message);
-        							} else if (mt.equalsIgnoreCase("GGA")) {
-        									gpsloc.parseGGA(message);
-        							} else if (mt.equalsIgnoreCase("VTG")) {
-        									gpsloc.parseVTG(message);
-        							} else if (mt.equalsIgnoreCase("ZDA")) {
-        									gpsloc.parseZDA(message);
-        							} else if (mt.equalsIgnoreCase("GSA")) {
-        									gpsloc.parseGSA(message);
+        							if (!mt.isEmpty()) {
+	        							if (mt.equalsIgnoreCase("GST")) {
+	        									gpsloc.parseGST(message);
+	        							} else if (mt.equalsIgnoreCase("GGA")) {
+	        									gpsloc.parseGGA(message);
+	        							} else if (mt.equalsIgnoreCase("VTG")) {
+	        									gpsloc.parseVTG(message);
+	        							} else if (mt.equalsIgnoreCase("ZDA")) {
+	        									gpsloc.parseZDA(message);
+	        							} else if (mt.equalsIgnoreCase("GSA")) {
+	        									gpsloc.parseGSA(message);
+	        							}
+        							}
+        							} catch (Exception e) {
+        								sendCallback(PluginResult.Status.ERROR,
+        		                                JSONHelper.errorJSON("NMEA", "Could not parse"
+	                                        + exc.getMessage() + "- "+message));
         							}
         						}
         					}
