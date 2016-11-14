@@ -276,7 +276,7 @@ public class GPSLocation {
 				int astpos = v.indexOf("*");
 				if (astpos > 0) {
 					String vh = v.substring(0,astpos);
-					this.vdop = Float.parseFloat(v);
+					this.vdop = Float.parseFloat(vh);
 				}
 			}
 		} catch (Exception exc) {
