@@ -117,7 +117,7 @@ public class GPSLocation {
 	
 	public boolean checkUTC(String utc_chk) {
 		boolean test = (this.utc == null  || this.utc.isEmpty());
-		boolean t2 = (utc_chk ==null)
+		boolean t2 = (utc_chk ==null);
 		if (!test && !t2) {
 			return this.utc.equalsIgnoreCase(utc_chk);
 		} else {
