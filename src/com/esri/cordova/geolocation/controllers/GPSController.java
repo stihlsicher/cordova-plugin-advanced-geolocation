@@ -318,10 +318,12 @@ public final class GPSController implements Runnable {
         						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
         							/* Auswerten des Objektes und zurücksenden! */
         							String loc = gpsloc.getLocation(parsingErrors, parsedTypes);
-        							parsingErrors = new ArrayList<String>();
-        							parsedTypes = new ArrayList<String>();
-        							sendCallback(PluginResult.Status.OK,
+        							if (loc != null) {
+        								sendCallback(PluginResult.Status.OK,
     	        							JSONHelper.nmeaJSON("NMEA", loc, timestamp));
+        							}
+        						//	parsingErrors = new ArrayList<String>();
+        						//	parsedTypes = new ArrayList<String>();
         							gpsloc.clear();
         						} 
         					}
@@ -339,7 +341,7 @@ public final class GPSController implements Runnable {
 							try {
 								if (mt != null && !mt.isEmpty()) {
     								mt = mt.toUpperCase();
-    								parsedTypes.add(mt);
+    								//parsedTypes.add(mt);
         							if (mt.equalsIgnoreCase("GST")) {
         									gpsloc.parseGST(message);
         									if (gpsloc.parseError()) {
@@ -366,23 +368,18 @@ public final class GPSController implements Runnable {
         										parsingErrors.add(gpsloc.getError());
         									}
         							}
-        							if (gpsloc.parseError()) {
-        								sendCallback(PluginResult.Status.ERROR,
-        		                                JSONHelper.errorJSON("NMEA", "Error while parsing: "
-	                                        + gpsloc.getError() + " - "+message));
-        							}
     							}
 							} catch (Exception exc) {
-								sendCallback(PluginResult.Status.ERROR,
+								/*sendCallback(PluginResult.Status.ERROR,
 		                                JSONHelper.errorJSON("NMEA", "Could not parse"
-                                    + exc.getMessage() + "- "+message));
+                                    + exc.getMessage() + "- "+message));*/
 							}
         						
         					
 		        		} catch (Exception exc) {
-	        				sendCallback(PluginResult.Status.ERROR,
+	        				/*sendCallback(PluginResult.Status.ERROR,
 	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
-	                                        + exc.getMessage()));
+	                                        + exc.getMessage()));*/
 	        			}
         			}
         		}

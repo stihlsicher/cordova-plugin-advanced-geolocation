@@ -58,19 +58,19 @@ import java.util.ArrayList;
 public class GPSLocation {
 
 	private long timestamp;
-	private float latitude;
-	private float longitude;
+	private Float latitude;
+	private Float longitude;
 	private int quality;
-	private float accuracy;
-	private float speed;
-	private float bearing;
-	private float altitude;
-	private float altitude_accuracy;
-	private float rtk_accuracy;
-	private float rtk_altitude_accuracy;
-	private float pdop;
-	private float hdop;
-	private float vdop;
+	private Float accuracy;
+	private Float speed;
+	private Float bearing;
+	private Float altitude;
+	private Float altitude_accuracy;
+	private Float rtk_accuracy;
+	private Float rtk_altitude_accuracy;
+	private Float pdop;
+	private Float hdop;
+	private Float vdop;
 	private int fixtype;
 	private String utc;
 	private String errorMessage;
@@ -78,30 +78,28 @@ public class GPSLocation {
 	private ArrayList<String> mtypes = new ArrayList<String>();
 	
 	public GPSLocation() {
-		
+		this.clear();
 	}
 	
 	public void clear() {
 		this.timestamp = 0;
-		this.latitude = 0;
-		this.longitude = 0;
+		this.latitude = null;
+		this.longitude = null;
 		this.quality = 0;
-		this.accuracy = 0;
-		this.speed = 0;
-		this.bearing = 0;
-		this.altitude = 0;
-		this.altitude_accuracy = 0;
-		this.rtk_accuracy = 0;
-		this.rtk_altitude_accuracy = 0;
-		this.pdop = 0;
-		this.hdop = 0;
-		this.vdop = 0;
+		this.accuracy = null;
+		this.speed = null;
+		this.bearing = null;
+		this.altitude = null;
+		this.altitude_accuracy = null;
+		this.rtk_accuracy = null;
+		this.rtk_altitude_accuracy = null;
+		this.pdop = null;
+		this.hdop = null;
+		this.vdop = null;
 		this.fixtype = 1;
-		this.utc = "";
+		this.utc = null;
 		this.errorMessage = null;
 		this.error = false;
-		this.mtypes = new ArrayList<String>();
-		
 	}
 	
 	public boolean parseError() {
@@ -161,16 +159,22 @@ public class GPSLocation {
     	try {
     		if (this.quality == 0) {
     			//return null;
-    			json.put("service","no fix");
+    			json.put("service","NO-FIX");
     		}
-    		if (this.quality > 0 && this.quality < 3) {
-    			json.put("service","gps");
+    		if (this.quality == 2) {
+    			json.put("service","GPS");
     		}
-    		if (this.quality > 3) {
-    			json.put("service","rtk");
+    		if (this.quality == 3) {
+    			json.put("service","RTD");
     		}
-    		json.put("parsingErrors",parsingErrors);
-    		json.put("parsedTypes",parsedTypes);
+    		if (this.quality == 4) {
+    			json.put("service","RTK fix");
+    		}
+    		if (this.quality == 5) {
+    			json.put("service","RTK float");
+    		}
+    	//	json.put("parsingErrors",parsingErrors);
+    //		json.put("parsedTypes",parsedTypes);
     		json.put("timestamp",this.timestamp);
     		json.put("latitude",this.latitude);
     		json.put("longitude",this.longitude);
@@ -186,7 +190,7 @@ public class GPSLocation {
     		json.put("hdop",this.hdop);
     		json.put("pdop",this.pdop);
     		json.put("fixtype",this.fixtype);
-    		json.put("messageTypes",this.mtypes);
+    	//	json.put("messageTypes",this.mtypes);
     		
     	} catch (Exception exc) {
             return "Fehler getLocation: "+exc.getMessage();
@@ -229,7 +233,7 @@ public class GPSLocation {
 					String lat_min1 = mp[2].substring(2, 4);
 					String lat_min2 = mp[2].substring(5);
 					String lat_min3 = "0." + lat_min1 + lat_min2;
-					float lat_dec = Float.parseFloat(lat_min3)/.6f;
+					Float lat_dec = Float.parseFloat(lat_min3)/.6f;
 					this.latitude = Float.parseFloat(lat_deg) + lat_dec;
 					// Direction of latitude. North is positive, south negative
 					if (!mp[3].isEmpty() && mp[3].equals("N")) {
@@ -246,7 +250,7 @@ public class GPSLocation {
 					String lon_min1 = mp[4].substring(3, 5);
 					String lon_min2 = mp[4].substring(6);
 					String lon_min3 = "0." + lon_min1 + lon_min2;
-					float lon_dec = Float.parseFloat(lon_min3)/.6f;
+					Float lon_dec = Float.parseFloat(lon_min3)/.6f;
 					this.longitude = Float.parseFloat(lon_deg) + lon_dec;
 					//direction of longitude, east is positive
 					if (!mp[5].isEmpty() && mp[5].equals("E")) {
