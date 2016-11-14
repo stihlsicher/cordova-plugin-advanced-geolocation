@@ -152,9 +152,10 @@ public class GPSLocation {
     	final JSONObject json = new JSONObject();
     	try {
     		if (this.quality == 0) {
-    			return null;
+    			//return null;
+    			json.put("provider","no fix");
     		}
-    		if (this.quality < 3) {
+    		if (this.quality > 0 && this.quality < 3) {
     			json.put("provider","gps");
     		}
     		if (this.quality > 3) {
