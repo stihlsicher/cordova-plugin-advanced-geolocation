@@ -50,6 +50,7 @@ import java.lang.*;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 /**
  * Threadsafe class for converting location data into JSON
@@ -74,28 +75,33 @@ public class GPSLocation {
 	private String utc;
 	private String errorMessage;
 	private boolean error = false;
+	private ArrayList<String> mtypes = new ArrayList<String>();
 	
 	public GPSLocation() {
 		
 	}
 	
 	public void clear() {
-		timestamp = 0;
-		latitude = 0;
-		longitude = 0;
-		quality = 0;
-		accuracy = 0;
-		speed = 0;
-		bearing = 0;
-		altitude = 0;
-		altitude_accuracy = 0;
-		rtk_accuracy = 0;
-		rtk_altitude_accuracy = 0;
-		pdop = 0;
-		hdop = 0;
-		vdop = 0;
-		fixtype = 1;
-		utc = "";
+		this.timestamp = 0;
+		this.latitude = 0;
+		this.longitude = 0;
+		this.quality = 0;
+		this.accuracy = 0;
+		this.speed = 0;
+		this.bearing = 0;
+		this.altitude = 0;
+		this.altitude_accuracy = 0;
+		this.rtk_accuracy = 0;
+		this.rtk_altitude_accuracy = 0;
+		this.pdop = 0;
+		this.hdop = 0;
+		this.vdop = 0;
+		this.fixtype = 1;
+		this.utc = "";
+		this.errorMessage = null;
+		this.error = false;
+		this.mtypes = new ArrayList<String>();
+		
 	}
 	
 	public boolean parseError() {
@@ -119,6 +125,7 @@ public class GPSLocation {
 	}
 	
 	public String messageType(String message) {
+		mtypes.add(message);
 		if (message.substring(0,2).equalsIgnoreCase("$G")) {
 			return message.substring(3,6);
 		} else {
@@ -176,6 +183,7 @@ public class GPSLocation {
     		json.put("hdop",this.hdop);
     		json.put("pdop",this.pdop);
     		json.put("fixtype",this.fixtype);
+    		json.put("messageTypes",this.mtypes);
     	} catch (Exception exc) {
             return "Fehler getLocation: "+exc.getMessage();
         }
