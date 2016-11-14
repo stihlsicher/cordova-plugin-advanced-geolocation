@@ -72,6 +72,8 @@ public class GPSLocation {
 	private float vdop;
 	private int fixtype;
 	private String utc;
+	private String errorMessage;
+	private boolean error = false;
 	
 	public GPSLocation() {
 		
@@ -94,6 +96,17 @@ public class GPSLocation {
 		vdop = 0;
 		fixtype = 1;
 		utc = "";
+	}
+	
+	public boolean parseError() {
+		return this.error;
+	}
+	
+	public String getError() {
+		String e = this.errorMessage;
+		this.errorMessage = null;
+		this.error = false;
+		return this.e;
 	}
 	
 	public boolean checkUTC(String utc_chk) {
@@ -144,8 +157,8 @@ public class GPSLocation {
     		json.put("hdop",this.hdop);
     		json.put("pdop",this.pdop);
     		json.put("fixtype",this.fixtype);
-    	} catch (JSONException exc) {
-            //logJSONException(exc);
+    	} catch (Exception exc) {
+            return "Fehler getLocation: "+exc.getMessage();
         }
     	return json.toString();
     }
@@ -153,9 +166,86 @@ public class GPSLocation {
 	
 	
 	public void parseGGA(String message) {
-		String[] mp = message.split(",");
-		/* Parsing time if not already set */
-		if (this.timestamp == 0) {
+		try {
+			String[] mp = message.split(",");
+			/* Parsing time if not already set */
+			if (this.timestamp == 0) {
+				int len = mp[1].length();
+				int d = mp[1].indexOf(".");
+				int hcount = d - 4;
+				String mt = mp[1];
+				int h = Integer.parseInt(mt.substring(0,hcount));
+				int m = Integer.parseInt(mt.substring(hcount,hcount+2));
+				int s = Integer.parseInt(mt.substring(hcount+2,hcount+4));
+				String t = mp[1].substring(d+1);
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
+				Date currentTime = new Date();
+				this.timestamp =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), h, m, s);
+				//Calendar calendar = Calendar.getInstance();
+				//calendar.setTime(result);
+				//this.timestamp = calendar.getTimeInMillis();
+			}
+			this.utc = mp[1];
+			this.quality = Integer.parseInt(mp[6]);
+			if (this.quality > 0) {
+				
+				/* Parsing Latitude */
+				String lat_deg = mp[2].substring(0, 2);
+				String lat_min1 = mp[2].substring(2, 4);
+				String lat_min2 = mp[2].substring(5);
+				String lat_min3 = "0." + lat_min1 + lat_min2;
+				float lat_dec = Float.parseFloat(lat_min3)/.6f;
+				this.latitude = Float.parseFloat(lat_deg) + lat_dec;
+	
+				// Direction of latitude. North is positive, south negative
+				if (mp[3].equals("N")) {
+				  // no correction needed
+				} else {
+				  this.longitude = this.latitude * -1;
+				}
+				
+				/* Parsing longitude */
+				String lon_deg = mp[4].substring(0, 3);
+				String lon_min1 = mp[4].substring(3, 5);
+				String lon_min2 = mp[4].substring(6);
+				String lon_min3 = "0." + lon_min1 + lon_min2;
+				float lon_dec = Float.parseFloat(lon_min3)/.6f;
+				this.longitude = Float.parseFloat(lon_deg) + lon_dec;
+				//direction of longitude, east is positive
+				if (mp[5].equals("E")) {
+				    // No correction needed
+				} else {
+				  this.longitude = this.longitude * -1;
+				}
+				
+				this.hdop = Float.parseFloat(mp[8]);
+				this.altitude = Float.parseFloat(mp[9]);
+			}
+		} catch (Exception exc) {
+			this.error = true;
+			this.errorMessage = exc.getMessage();
+		}
+	}
+	
+	public void parseGSA(String message) {
+		try {
+			String[] mp = message.split(",");
+			this.fixtype = Integer.parseInt(mp[2]);
+			int l = mp.length;
+			this.pdop = Float.parseFloat(mp[l-3]);
+			this.hdop = Float.parseFloat(mp[l-2]);
+			String v = mp[l-1];
+			String vh = v.substring(0,v.indexOf("*"));
+			this.vdop = Float.parseFloat(v);
+		} catch (Exception exc) {
+			this.error = true;
+			this.errorMessage = exc.getMessage();
+		}
+	}
+	
+	public void parseZDA(String message) {
+		try {
+			String[] mp = message.split(",");
 			int len = mp[1].length();
 			int d = mp[1].indexOf(".");
 			int hcount = d - 4;
@@ -163,102 +253,43 @@ public class GPSLocation {
 			int h = Integer.parseInt(mt.substring(0,hcount));
 			int m = Integer.parseInt(mt.substring(hcount,hcount+2));
 			int s = Integer.parseInt(mt.substring(hcount+2,hcount+4));
-			String t = mp[1].substring(d+1);
+			String t = mt.substring(d+1);
+			int year = Integer.parseInt(mp[4]);
+			int month = Integer.parseInt(mp[3]);
+			int day = Integer.parseInt(mp[2]);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 			Date currentTime = new Date();
-			this.timestamp =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), h, m, s);
-			//Calendar calendar = Calendar.getInstance();
-			//calendar.setTime(result);
-			//this.timestamp = calendar.getTimeInMillis();
+			this.timestamp =  Date.UTC(year, month, day, h, m, s);
+		} catch (Exception exc) {
+			this.error = true;
+			this.errorMessage = exc.getMessage();
 		}
-		this.utc = mp[1];
-		this.quality = Integer.parseInt(mp[6]);
-		if (this.quality > 0) {
-			
-			/* Parsing Latitude */
-			String lat_deg = mp[2].substring(0, 2);
-			String lat_min1 = mp[2].substring(2, 4);
-			String lat_min2 = mp[2].substring(5);
-			String lat_min3 = "0." + lat_min1 + lat_min2;
-			float lat_dec = Float.parseFloat(lat_min3)/.6f;
-			this.latitude = Float.parseFloat(lat_deg) + lat_dec;
-
-			// Direction of latitude. North is positive, south negative
-			if (mp[3].equals("N")) {
-			  // no correction needed
-			} else {
-			  this.longitude = this.latitude * -1;
-			}
-			
-			/* Parsing longitude */
-			String lon_deg = mp[4].substring(0, 3);
-			String lon_min1 = mp[4].substring(3, 5);
-			String lon_min2 = mp[4].substring(6);
-			String lon_min3 = "0." + lon_min1 + lon_min2;
-			float lon_dec = Float.parseFloat(lon_min3)/.6f;
-			this.longitude = Float.parseFloat(lon_deg) + lon_dec;
-			//direction of longitude, east is positive
-			if (mp[5].equals("E")) {
-			    // No correction needed
-			} else {
-			  this.longitude = this.longitude * -1;
-			}
-			
-			this.hdop = Float.parseFloat(mp[8]);
-			this.altitude = Float.parseFloat(mp[9]);
-		}
-	}
-	
-	public void parseGSA(String message) {
-		String[] mp = message.split(",");
-		this.fixtype = Integer.parseInt(mp[2]);
-		int l = mp.length;
-		this.pdop = Float.parseFloat(mp[l-3]);
-		this.hdop = Float.parseFloat(mp[l-2]);
-		String v = mp[l-1];
-		String vh = v.substring(0,v.indexOf("*"));
-		this.vdop = Float.parseFloat(v);
-	}
-	
-	public void parseZDA(String message) {
-		String[] mp = message.split(",");
-		int len = mp[1].length();
-		int d = mp[1].indexOf(".");
-		int hcount = d - 4;
-		String mt = mp[1];
-		int h = Integer.parseInt(mt.substring(0,hcount));
-		int m = Integer.parseInt(mt.substring(hcount,hcount+2));
-		int s = Integer.parseInt(mt.substring(hcount+2,hcount+4));
-		String t = mt.substring(d+1);
-		int year = Integer.parseInt(mp[4]);
-		int month = Integer.parseInt(mp[3]);
-		int day = Integer.parseInt(mp[2]);
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
-		Date currentTime = new Date();
-		this.timestamp =  Date.UTC(year, month, day, h, m, s);
-		//Calendar calendar = Calendar.getInstance();
-		//calendar.setTime(result);
-		//this.timestamp = calendar.getTimeInMillis();
-
-	/*	String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
-		Instant instant = Instant.parse( timestr );
-		this.timestamp = instant.toEpochMilli();*/
 	}
 	
     public void parseVTG(String message) {
-    	String[] mp = message.split(",");
-    	this.bearing = Float.parseFloat(mp[1]);
-    	this.speed = Float.parseFloat(mp[7]);
-    	this.speed = this.speed / (float)3.6;
-    }
+    	try {
+	    	String[] mp = message.split(",");
+	    	this.bearing = Float.parseFloat(mp[1]);
+	    	this.speed = Float.parseFloat(mp[7]);
+	    	this.speed = this.speed / (float)3.6;
+		} catch (Exception exc) {
+			this.error = true;
+			this.errorMessage = exc.getMessage();
+		}
+	}
     
     public void parseGST(String message) {
-    	String[] mp = message.split(",");
-		this.utc = mp[1];
-    	this.rtk_accuracy = Float.parseFloat(mp[6]);
-    	String mt = mp[8];
-    	mt = mt.substring(0,mt.indexOf("*"));
-    	this.rtk_altitude_accuracy = Float.parseFloat(mt);
+    	try {
+	    	String[] mp = message.split(",");
+			this.utc = mp[1];
+	    	this.rtk_accuracy = Float.parseFloat(mp[6]);
+	    	String mt = mp[8];
+	    	mt = mt.substring(0,mt.indexOf("*"));
+	    	this.rtk_altitude_accuracy = Float.parseFloat(mt);
+		} catch (Exception exc) {
+			this.error = true;
+			this.errorMessage = exc.getMessage();
+		}
     }
 	
     
