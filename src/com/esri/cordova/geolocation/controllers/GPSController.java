@@ -312,7 +312,7 @@ public final class GPSController implements Runnable {
         				try {
         					
         					/* Parsing NMEA Data to Object */
-        					if (gpsloc.getUTC(message)==null) {
+        					if (gpsloc.getUTC(message)!=null) {
         						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
         							/* Auswerten des Objektes und zurücksenden! */
         							String loc = gpsloc.getLocation();
