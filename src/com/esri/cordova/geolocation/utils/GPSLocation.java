@@ -153,14 +153,15 @@ public class GPSLocation {
     	try {
     		if (this.quality == 0) {
     			//return null;
-    			json.put("provider","no fix");
+    			json.put("service","no fix");
     		}
     		if (this.quality > 0 && this.quality < 3) {
-    			json.put("provider","gps");
+    			json.put("service","gps");
     		}
     		if (this.quality > 3) {
-    			json.put("provider","rtk");
+    			json.put("service","rtk");
     		}
+    		json.put("provider","NMEA");
     		json.put("timestamp",this.timestamp);
     		json.put("latitude",this.latitude);
     		json.put("longitude",this.longitude);
