@@ -161,7 +161,6 @@ public class GPSLocation {
     		if (this.quality > 3) {
     			json.put("service","rtk");
     		}
-    		json.put("provider","NMEA");
     		json.put("timestamp",this.timestamp);
     		json.put("latitude",this.latitude);
     		json.put("longitude",this.longitude);
