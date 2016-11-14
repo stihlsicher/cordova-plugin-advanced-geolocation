@@ -336,27 +336,27 @@ public final class GPSController implements Runnable {
 		        							if (mt.equalsIgnoreCase("GST")) {
 		        									gpsloc.parseGST(message);
 		        									if (gpsloc.parseError()) {
-		        										parsingErrors.add(gpsloc.getError())
+		        										parsingErrors.add(gpsloc.getError());
 		        									}
 		        							} else if (mt.equalsIgnoreCase("GGA")) {
 		        									gpsloc.parseGGA(message);
 		        									if (gpsloc.parseError()) {
-		        										parsingErrors.add(gpsloc.getError())
+		        										parsingErrors.add(gpsloc.getError());
 		        									}
 		        							} else if (mt.equalsIgnoreCase("VTG")) {
 		        									gpsloc.parseVTG(message);
 		        									if (gpsloc.parseError()) {
-		        										parsingErrors.add(gpsloc.getError())
+		        										parsingErrors.add(gpsloc.getError());
 		        									}
 		        							} else if (mt.equalsIgnoreCase("ZDA")) {
 		        									gpsloc.parseZDA(message);
 		        									if (gpsloc.parseError()) {
-		        										parsingErrors.add(gpsloc.getError())
+		        										parsingErrors.add(gpsloc.getError());
 		        									}
 		        							} else if (mt.equalsIgnoreCase("GSA")) {
 		        									gpsloc.parseGSA(message);
 		        									if (gpsloc.parseError()) {
-		        										parsingErrors.add(gpsloc.getError())
+		        										parsingErrors.add(gpsloc.getError());
 		        									}
 		        							}
 		        							if (gpsloc.parseError()) {
