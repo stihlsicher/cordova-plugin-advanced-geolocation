@@ -323,7 +323,7 @@ public final class GPSController implements Runnable {
         							sendCallback(PluginResult.Status.OK,
     	        							JSONHelper.nmeaJSON("NMEA", loc, timestamp));
         							gpsloc.clear();
-        						} else {
+        						} 
         							/* Gehört noch zur Serie */
         							String mt = null;
         							try {
@@ -376,7 +376,7 @@ public final class GPSController implements Runnable {
         		                                JSONHelper.errorJSON("NMEA", "Could not parse"
 	                                        + exc.getMessage() + "- "+message));
         							}
-        						}
+        						
         					}
 		        		} catch (Exception exc) {
 	        				sendCallback(PluginResult.Status.ERROR,
