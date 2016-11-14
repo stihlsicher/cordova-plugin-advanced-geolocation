@@ -187,7 +187,7 @@ public class GPSLocation {
 		try {
 			String[] mp = message.split(",");
 			/* Parsing time if not already set */
-			if (this.timestamp == 0) {
+			if (this.timestamp == 0 && !mp[1].isEmpty()) {
 				int len = mp[1].length();
 				int d = mp[1].indexOf(".");
 				int hcount = d - 4;
@@ -203,41 +203,51 @@ public class GPSLocation {
 				//calendar.setTime(result);
 				//this.timestamp = calendar.getTimeInMillis();
 			}
-			this.utc = mp[1];
-			this.quality = Integer.parseInt(mp[6]);
+			if (!mp[1].isEmpty()) {
+				this.utc = mp[1];
+			}
+			if (!mp[6].isEmpty()) {
+				this.quality = Integer.parseInt(mp[6]);
+			}
 			if (this.quality > 0) {
-				
-				/* Parsing Latitude */
-				String lat_deg = mp[2].substring(0, 2);
-				String lat_min1 = mp[2].substring(2, 4);
-				String lat_min2 = mp[2].substring(5);
-				String lat_min3 = "0." + lat_min1 + lat_min2;
-				float lat_dec = Float.parseFloat(lat_min3)/.6f;
-				this.latitude = Float.parseFloat(lat_deg) + lat_dec;
+				if (!mp[2].isEmpty()) {
+					/* Parsing Latitude */
+					String lat_deg = mp[2].substring(0, 2);
+					String lat_min1 = mp[2].substring(2, 4);
+					String lat_min2 = mp[2].substring(5);
+					String lat_min3 = "0." + lat_min1 + lat_min2;
+					float lat_dec = Float.parseFloat(lat_min3)/.6f;
+					this.latitude = Float.parseFloat(lat_deg) + lat_dec;
+					// Direction of latitude. North is positive, south negative
+					if (!mp[3].isEmpty() && mp[3].equals("N")) {
+					  // no correction needed
+					} else {
+					  this.longitude = this.latitude * -1;
+					}
+
+				}
 	
-				// Direction of latitude. North is positive, south negative
-				if (mp[3].equals("N")) {
-				  // no correction needed
-				} else {
-				  this.longitude = this.latitude * -1;
+				if (!mp[4].isEmpty()) {	
+					/* Parsing longitude */
+					String lon_deg = mp[4].substring(0, 3);
+					String lon_min1 = mp[4].substring(3, 5);
+					String lon_min2 = mp[4].substring(6);
+					String lon_min3 = "0." + lon_min1 + lon_min2;
+					float lon_dec = Float.parseFloat(lon_min3)/.6f;
+					this.longitude = Float.parseFloat(lon_deg) + lon_dec;
+					//direction of longitude, east is positive
+					if (!mp[5].isEmpty() && mp[5].equals("E")) {
+					    // No correction needed
+					} else {
+					  this.longitude = this.longitude * -1;
+					}
 				}
-				
-				/* Parsing longitude */
-				String lon_deg = mp[4].substring(0, 3);
-				String lon_min1 = mp[4].substring(3, 5);
-				String lon_min2 = mp[4].substring(6);
-				String lon_min3 = "0." + lon_min1 + lon_min2;
-				float lon_dec = Float.parseFloat(lon_min3)/.6f;
-				this.longitude = Float.parseFloat(lon_deg) + lon_dec;
-				//direction of longitude, east is positive
-				if (mp[5].equals("E")) {
-				    // No correction needed
-				} else {
-				  this.longitude = this.longitude * -1;
+				if (!mp[8].isEmpty()) {
+					this.hdop = Float.parseFloat(mp[8]);
 				}
-				
-				this.hdop = Float.parseFloat(mp[8]);
-				this.altitude = Float.parseFloat(mp[9]);
+				if (!mp[9].isEmpty()) {
+					this.altitude = Float.parseFloat(mp[9]);
+				}
 			}
 		} catch (Exception exc) {
 			this.error = true;
@@ -248,13 +258,22 @@ public class GPSLocation {
 	public void parseGSA(String message) {
 		try {
 			String[] mp = message.split(",");
-			this.fixtype = Integer.parseInt(mp[2]);
+			if (!mp[2].isEmpty()) {
+				this.fixtype = Integer.parseInt(mp[2]);
+			}
 			int l = mp.length;
-			this.pdop = Float.parseFloat(mp[l-3]);
-			this.hdop = Float.parseFloat(mp[l-2]);
-			String v = mp[l-1];
-			String vh = v.substring(0,v.indexOf("*"));
-			this.vdop = Float.parseFloat(v);
+			
+			if (!mp[l-3].isEmpty()) {
+				this.pdop = Float.parseFloat(mp[l-3]);
+			}
+			if (!mp[l-2].isEmpty()) {
+				this.hdop = Float.parseFloat(mp[l-2]);
+			}
+			if (!mp[l-1].isEmpty()) {
+				String v = mp[l-1];
+				String vh = v.substring(0,v.indexOf("*"));
+				this.vdop = Float.parseFloat(v);
+			}
 		} catch (Exception exc) {
 			this.error = true;
 			this.errorMessage = exc.getMessage();
@@ -264,20 +283,22 @@ public class GPSLocation {
 	public void parseZDA(String message) {
 		try {
 			String[] mp = message.split(",");
-			int len = mp[1].length();
-			int d = mp[1].indexOf(".");
-			int hcount = d - 4;
-			String mt = mp[1];
-			int h = Integer.parseInt(mt.substring(0,hcount));
-			int m = Integer.parseInt(mt.substring(hcount,hcount+2));
-			int s = Integer.parseInt(mt.substring(hcount+2,hcount+4));
-			String t = mt.substring(d+1);
-			int year = Integer.parseInt(mp[4]);
-			int month = Integer.parseInt(mp[3]);
-			int day = Integer.parseInt(mp[2]);
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
-			Date currentTime = new Date();
-			this.timestamp =  Date.UTC(year, month, day, h, m, s);
+			if (!mp[1].isEmpty()) {
+				int len = mp[1].length();
+				int d = mp[1].indexOf(".");
+				int hcount = d - 4;
+				String mt = mp[1];
+				int h = Integer.parseInt(mt.substring(0,hcount));
+				int m = Integer.parseInt(mt.substring(hcount,hcount+2));
+				int s = Integer.parseInt(mt.substring(hcount+2,hcount+4));
+				String t = mt.substring(d+1);
+				int year = Integer.parseInt(mp[4]);
+				int month = Integer.parseInt(mp[3]);
+				int day = Integer.parseInt(mp[2]);
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
+				Date currentTime = new Date();
+				this.timestamp =  Date.UTC(year, month, day, h, m, s);
+			}
 		} catch (Exception exc) {
 			this.error = true;
 			this.errorMessage = exc.getMessage();
@@ -287,9 +308,13 @@ public class GPSLocation {
     public void parseVTG(String message) {
     	try {
 	    	String[] mp = message.split(",");
-	    	this.bearing = Float.parseFloat(mp[1]);
-	    	this.speed = Float.parseFloat(mp[7]);
-	    	this.speed = this.speed / (float)3.6;
+	    	if (!mp[1].isEmpty()) {
+	    		this.bearing = Float.parseFloat(mp[1]);
+	    	}
+	    	if (!mp[7].isEmpty()) {
+	    		this.speed = Float.parseFloat(mp[7]);
+	    		this.speed = this.speed / (float)3.6;
+	    	}
 		} catch (Exception exc) {
 			this.error = true;
 			this.errorMessage = exc.getMessage();
@@ -299,11 +324,17 @@ public class GPSLocation {
     public void parseGST(String message) {
     	try {
 	    	String[] mp = message.split(",");
-			this.utc = mp[1];
-	    	this.rtk_accuracy = Float.parseFloat(mp[6]);
-	    	String mt = mp[8];
-	    	mt = mt.substring(0,mt.indexOf("*"));
-	    	this.rtk_altitude_accuracy = Float.parseFloat(mt);
+	    	if (!mp[1].isEmpty()) {
+	    		this.utc = mp[1];
+	    	}
+	    	if (!mp[6].isEmpty()) {
+	    		this.rtk_accuracy = Float.parseFloat(mp[6]);
+	    	}
+	    	if (!mp[8].isEmpty()) {
+	    		String mt = mp[8];
+	    		mt = mt.substring(0,mt.indexOf("*"));
+	    		this.rtk_altitude_accuracy = Float.parseFloat(mt);
+	    	}
 		} catch (Exception exc) {
 			this.error = true;
 			this.errorMessage = exc.getMessage();

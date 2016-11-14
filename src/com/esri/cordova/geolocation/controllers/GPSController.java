@@ -345,8 +345,8 @@ public final class GPSController implements Runnable {
 		        							}
 		        							if (gpsloc.parseError()) {
 		        								sendCallback(PluginResult.Status.ERROR,
-		        		                                JSONHelper.errorJSON("NMEA", "Error while parsing"
-			                                        + gpsloc.getError() + "- "+message));
+		        		                                JSONHelper.errorJSON("NMEA", "Error while parsing: "
+			                                        + gpsloc.getError() + " - "+message));
 		        							}
 	        							}
         							} catch (Exception exc) {
