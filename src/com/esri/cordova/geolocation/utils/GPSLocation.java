@@ -110,7 +110,11 @@ public class GPSLocation {
 	}
 	
 	public boolean checkUTC(String utc_chk) {
-		return this.utc.equalsIgnoreCase(utc_chk);
+		if (this.utc != null && !this.utc.isEmtpy()) {
+			return this.utc.equalsIgnoreCase(utc_chk);
+		} else {
+			return true;
+		}
 	}
 	
 	public String messageType(String message) {
@@ -122,10 +126,23 @@ public class GPSLocation {
 	}
 	
 	public String getUTC(String message) {
-		String mt = this.messageType(message);
-		if (mt.contentEquals("GST") ||mt.contentEquals("GGA") || mt.contentEquals("RMC")) {
-			String[] mp = message.split(",");
-			return mp[1];
+		String mt = null;
+		try {
+			String mt = this.messageType(message);
+		} catch (Exception e) {
+			this.error = true;
+			this.errorMessage = e.getMessage();
+		}
+		try {
+			if (mt != null && !mt.isEmpty()) {
+				if (mt.contentEquals("GST") ||mt.contentEquals("GGA") || mt.contentEquals("RMC")) {
+					String[] mp = message.split(",");
+					return mp[1];
+				}
+			}
+		} catch (Exception e) {
+			this.error = true;
+			this.errorMessage = e.getMessage();
 		}
 		return null;
 	}
