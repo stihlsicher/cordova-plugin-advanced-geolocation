@@ -166,10 +166,10 @@ public class GPSLocation {
 			String t = mp[1].substring(d+1);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 			Date currentTime = new Date();
-			Date result =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), h, m, s);
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(result);
-			this.timestamp = calendar.getTimeInMillis();
+			this.timestamp =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), h, m, s);
+			//Calendar calendar = Calendar.getInstance();
+			//calendar.setTime(result);
+			//this.timestamp = calendar.getTimeInMillis();
 		}
 		this.utc = mp[1];
 		this.quality = Integer.parseInt(mp[6]);
@@ -235,10 +235,10 @@ public class GPSLocation {
 		int day = Integer.parseInt(mp[2]);
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 		Date currentTime = new Date();
-		Date result =  Date.UTC(year, month, day, h, m, s);
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(result);
-		this.timestamp = calendar.getTimeInMillis();
+		this.timestamp =  Date.UTC(year, month, day, h, m, s);
+		//Calendar calendar = Calendar.getInstance();
+		//calendar.setTime(result);
+		//this.timestamp = calendar.getTimeInMillis();
 
 	/*	String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
 		Instant instant = Instant.parse( timestr );
