@@ -323,22 +323,16 @@ public final class GPSController implements Runnable {
         							/* Gehört noch zur Serie */
         							String mt = gpsloc.messageType(message);
         							mt = mt.toUpperCase();
-        							switch(mt) {
-        								case "GST":
+        							if (mt.equalsIgnoreCase("GST")) {
         									gpsloc.parseGST(message);
-        									break;
-        								case "GGA":
+        							} else if (mt.equalsIgnoreCase("GGA")) {
         									gpsloc.parseGGA(message);
-        									break;
-        								case "VTG":
+        							} else if (mt.equalsIgnoreCase("VTG")) {
         									gpsloc.parseVTG(message);
-        									break;
-        								case "ZDA":
+        							} else if (mt.equalsIgnoreCase("ZDA")) {
         									gpsloc.parseZDA(message);
-        									break;
-        								case "GSA":
+        							} else if (mt.equalsIgnoreCase("GSA")) {
         									gpsloc.parseGSA(message);
-        									break;
         							}
         						}
         					}

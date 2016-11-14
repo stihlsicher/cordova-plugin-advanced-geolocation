@@ -165,7 +165,7 @@ public class GPSLocation {
 			String t = mp[1].substring(d+1);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 			Date currentTime = new Date();
-			Date result =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), h, m, s);
+			Date result =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), Interger.parseInt(h), Interger.parseInt(m), Interger.parseInt(s));
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(result);
 			this.timestamp = calendar.getTimeInMillis();
@@ -231,7 +231,7 @@ public class GPSLocation {
 		String t = mt.substring(d+1);
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 		Date currentTime = new Date();
-		Date result =  Date.UTC(mp[4], mp[3], mp[2], h, m, s);
+		Date result =  Date.UTC(Interger.parseInt(mp[4]), Interger.parseInt(mp[3]), Interger.parseInt(mp[2]), Interger.parseInt(h), Interger.parseInt(m), Interger.parseInt(s));
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(result);
 		this.timestamp = calendar.getTimeInMillis();
@@ -245,7 +245,7 @@ public class GPSLocation {
     	String[] mp = message.split(",");
     	this.bearing = Float.parseFloat(mp[1]);
     	this.speed = Float.parseFloat(mp[7]);
-    	this.speed = this.speed / 3.6;
+    	this.speed = this.speed / (float)3.6;
     }
     
     public void parseGST(String message) {
