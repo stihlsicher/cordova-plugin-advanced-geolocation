@@ -293,6 +293,7 @@ public class GPSLocation {
 				if (astpos > 0) {
 					String vh = v.substring(0,astpos);
 					this.vdop = Float.parseFloat(vh);
+					this.altitude_accuracy = this.vdop;
 				}
 			}
 		} catch (Exception exc) {
