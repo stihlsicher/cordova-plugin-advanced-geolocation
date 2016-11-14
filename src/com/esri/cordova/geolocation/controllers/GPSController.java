@@ -321,7 +321,7 @@ public final class GPSController implements Runnable {
         							gpsloc.clear();
         						} else {
         							/* Gehört noch zur Serie */
-        							String mt;
+        							String mt = null;
         							try {
         								mt = gpsloc.messageType(message);
         							} catch (Exception exc) {
