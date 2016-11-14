@@ -63,6 +63,7 @@ public final class GPSController implements Runnable {
 
     private static final String TAG = "GeolocationPlugin";
     private ArrayList<String> nmeaMessages = new ArrayList<String>();
+    private ArrayList<String> parsingErrors = new ArrayList<String>();
 
     public GPSController(
             CordovaInterface cordova,
@@ -315,7 +316,7 @@ public final class GPSController implements Runnable {
         					if (gpsloc.getUTC(message)!=null) {
         						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
         							/* Auswerten des Objektes und zurücksenden! */
-        							String loc = gpsloc.getLocation();
+        							String loc = gpsloc.getLocation(parsingErrors);
         							sendCallback(PluginResult.Status.OK,
     	        							JSONHelper.nmeaJSON("NMEA", loc, timestamp));
         							gpsloc.clear();
@@ -334,14 +335,29 @@ public final class GPSController implements Runnable {
 	        								mt = mt.toUpperCase();
 		        							if (mt.equalsIgnoreCase("GST")) {
 		        									gpsloc.parseGST(message);
+		        									if (gpsloc.parseError()) {
+		        										parsingErrors.add(gpsloc.getError())
+		        									}
 		        							} else if (mt.equalsIgnoreCase("GGA")) {
 		        									gpsloc.parseGGA(message);
+		        									if (gpsloc.parseError()) {
+		        										parsingErrors.add(gpsloc.getError())
+		        									}
 		        							} else if (mt.equalsIgnoreCase("VTG")) {
 		        									gpsloc.parseVTG(message);
+		        									if (gpsloc.parseError()) {
+		        										parsingErrors.add(gpsloc.getError())
+		        									}
 		        							} else if (mt.equalsIgnoreCase("ZDA")) {
 		        									gpsloc.parseZDA(message);
+		        									if (gpsloc.parseError()) {
+		        										parsingErrors.add(gpsloc.getError())
+		        									}
 		        							} else if (mt.equalsIgnoreCase("GSA")) {
 		        									gpsloc.parseGSA(message);
+		        									if (gpsloc.parseError()) {
+		        										parsingErrors.add(gpsloc.getError())
+		        									}
 		        							}
 		        							if (gpsloc.parseError()) {
 		        								sendCallback(PluginResult.Status.ERROR,
