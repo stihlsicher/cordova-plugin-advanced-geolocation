@@ -336,7 +336,7 @@ public class GPSLocation {
 	    	if (!mp[8].isEmpty()) {
 	    		String mt = mp[8];
 	    		var astpos = mt.indexOf("*");
-	    		if (astpos > 0 ) {
+	    		if (astpos > 0) {
 	    			mt = mt.substring(0,astpos);
 	    			this.rtk_altitude_accuracy = Float.parseFloat(mt);
 	    		}
