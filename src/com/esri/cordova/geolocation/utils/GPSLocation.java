@@ -155,7 +155,7 @@ public class GPSLocation {
 		return null;
 	}
 	
-	public String getLocation(ArrayList<String> parsingErrors) {
+	public String getLocation(ArrayList<String> parsingErrors, ArrayList<String> parsedTypes) {
     	final JSONObject json = new JSONObject();
     	try {
     		if (this.quality == 0) {
@@ -168,6 +168,8 @@ public class GPSLocation {
     		if (this.quality > 3) {
     			json.put("service","rtk");
     		}
+    		json.put("parsingErrors",parsingErrors);
+    		json.put("parsedTypes",parsedTypes);
     		json.put("timestamp",this.timestamp);
     		json.put("latitude",this.latitude);
     		json.put("longitude",this.longitude);
@@ -184,7 +186,7 @@ public class GPSLocation {
     		json.put("pdop",this.pdop);
     		json.put("fixtype",this.fixtype);
     		json.put("messageTypes",this.mtypes);
-    		json.put("parsingErrors",parsingErrors);
+    		
     	} catch (Exception exc) {
             return "Fehler getLocation: "+exc.getMessage();
         }
