@@ -46,8 +46,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.time.*;
 import java.lang.*;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Threadsafe class for converting location data into JSON
@@ -163,10 +165,10 @@ public class GPSLocation {
 			String t = mp[1].substring(d+1);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 			Date currentTime = new Date();
-			String datestr = formatter.format(currentTime);
-			String timestr = datestr+"T"+h+":"+m+":"+s+"Z";
-			Instant instant = Instant.parse( timestr );
-			this.timestamp = instant.toEpochMilli();
+			Date result =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), h, m, s);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(result);
+			this.timestamp = calendar.getTimeInMillis();
 		}
 		this.utc = mp[1];
 		this.quality = Integer.parseInt(mp[6]);
@@ -219,17 +221,24 @@ public class GPSLocation {
 	
 	public void parseZDA(String message) {
 		String[] mp = message.split(",");
-		 int len = mp[1].length();
-		 int d = mp[1].indexOf(".");
-		 int hcount = d - 4;
-		 String mt = mp[1];
-		 String h = mt.substring(0,hcount);
-		 String m = mt.substring(hcount,hcount+2);
-		 String s = mt.substring(hcount+2,hcount+4);
-		 String t = mt.substring(d+1);
-		String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
+		int len = mp[1].length();
+		int d = mp[1].indexOf(".");
+		int hcount = d - 4;
+		String mt = mp[1];
+		String h = mt.substring(0,hcount);
+		String m = mt.substring(hcount,hcount+2);
+		String s = mt.substring(hcount+2,hcount+4);
+		String t = mt.substring(d+1);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
+		Date currentTime = new Date();
+		Date result =  Date.UTC(mp[4], mp[3], mp[2], h, m, s);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(result);
+		this.timestamp = calendar.getTimeInMillis();
+
+	/*	String timestr = mp[4]+"-"+mp[3]+"-"+mp[2]+"T"+h+":"+m+":"+s+"Z";
 		Instant instant = Instant.parse( timestr );
-		this.timestamp = instant.toEpochMilli();
+		this.timestamp = instant.toEpochMilli();*/
 	}
 	
     public void parseVTG(String message) {
@@ -243,7 +252,9 @@ public class GPSLocation {
     	String[] mp = message.split(",");
 		this.utc = mp[1];
     	this.rtk_accuracy = Float.parseFloat(mp[6]);
-    	this.rtk_altitude_accuracy = Float.parseFloat(mp[8]);
+    	String mt = mp[8];
+    	mt = mt.substring(0,mt.indexOf("*"));
+    	this.rtk_altitude_accuracy = Float.parseFloat(mt);
     }
 	
     
