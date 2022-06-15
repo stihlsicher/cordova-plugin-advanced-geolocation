@@ -20,6 +20,7 @@ import android.location.GpsSatellite;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Build;
@@ -65,6 +66,7 @@ public class GPSLocation {
 	private Float speed;
 	private Float bearing;
 	private Float altitude;
+	private Float altitudeDifferceEllipsoid;
 	private Float altitude_accuracy;
 	private Float rtk_accuracy;
 	private Float rtk_altitude_accuracy;
@@ -76,11 +78,14 @@ public class GPSLocation {
 	private String errorMessage;
 	private boolean error = false;
 	private ArrayList<String> mtypes = new ArrayList<String>();
-	
+	private ArrayList<String> sat = new ArrayList<String>();
+	private ArrayList<String> satSystem = new ArrayList<String>();
+	private ArrayList<String> NMEASentences = new ArrayList<String>();
+
 	public GPSLocation() {
 		this.clear();
 	}
-	
+
 	public void clear() {
 		this.timestamp = 0;
 		this.latitude = null;
@@ -100,19 +105,23 @@ public class GPSLocation {
 		this.utc = null;
 		this.errorMessage = null;
 		this.error = false;
+		this.sat = new ArrayList<String>();
+		this.satSystem = new ArrayList<String>();
+		this.NMEASentences = new ArrayList<String>();
+		this.altitudeDifferceEllipsoid = null;
 	}
-	
+
 	public boolean parseError() {
 		return this.error;
 	}
-	
+
 	public String getError() {
 		String e = this.errorMessage;
 		this.errorMessage = null;
 		this.error = false;
 		return e;
 	}
-	
+
 	public boolean checkUTC(String utc_chk) {
 		boolean test = (this.utc == null  || this.utc.isEmpty());
 		boolean t2 = (utc_chk ==null);
@@ -122,7 +131,11 @@ public class GPSLocation {
 			return true;
 		}
 	}
-	
+
+	public void addSentence(String message) {
+		this.NMEASentences.add(message);
+	}
+
 	public String messageType(String message) {
 		//mtypes.add(message.substring(0,6));
 		if (message.length() > 1 && message.substring(0,2).equalsIgnoreCase("$G")) {
@@ -131,7 +144,7 @@ public class GPSLocation {
 			return "NONE";
 		}
 	}
-	
+
 	public String getUTC(String message) {
 		String mt = null;
 		try {
@@ -153,7 +166,7 @@ public class GPSLocation {
 		}
 		return null;
 	}
-	
+
 	public String getLocation(ArrayList<String> parsingErrors, ArrayList<String> parsedTypes) {
     	final JSONObject json = new JSONObject();
     	try {
@@ -190,16 +203,20 @@ public class GPSLocation {
     		json.put("hdop",this.hdop);
     		json.put("pdop",this.pdop);
     		json.put("fixtype",this.fixtype);
+				String listString = "";
+				json.put("fixedSat",this.sat);
+				json.put("satSystem",this.satSystem);
+				json.put("NMEASentences",this.NMEASentences);
+				json.put("altitudeDifferceEllipsoid",this.altitudeDifferceEllipsoid);
     	//	json.put("messageTypes",this.mtypes);
-    		
+
     	} catch (Exception exc) {
             return "Fehler getLocation: "+exc.getMessage();
         }
     	return json.toString();
     }
-	
-	
-	
+
+
 	public void parseGGA(String message) {
 		try {
 			String[] mp = message.split(",");
@@ -213,7 +230,7 @@ public class GPSLocation {
 				int m = Integer.parseInt(mt.substring(hcount,hcount+2));
 				int s = Integer.parseInt(mt.substring(hcount+2,hcount+4));
 				String t = mp[1].substring(d+1);
-				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 				Date currentTime = new Date();
 				this.timestamp =  Date.UTC(currentTime.getYear(), currentTime.getMonth(), currentTime.getDate(), h, m, s);
 				//Calendar calendar = Calendar.getInstance();
@@ -243,8 +260,8 @@ public class GPSLocation {
 					}
 
 				}
-	
-				if (!mp[4].isEmpty()) {	
+
+				if (!mp[4].isEmpty()) {
 					/* Parsing longitude */
 					String lon_deg = mp[4].substring(0, 3);
 					String lon_min1 = mp[4].substring(3, 5);
@@ -266,13 +283,16 @@ public class GPSLocation {
 				if (!mp[9].isEmpty()) {
 					this.altitude = Float.parseFloat(mp[9]);
 				}
+				if (!mp[11].isEmpty()) {
+					this.altitudeDifferceEllipsoid = Float.parseFloat(mp[11]);
+				}
 			}
 		} catch (Exception exc) {
 			this.error = true;
 			this.errorMessage = exc.getMessage();
 		}
 	}
-	
+
 	public void parseGSA(String message) {
 		try {
 			String[] mp = message.split(",");
@@ -280,7 +300,24 @@ public class GPSLocation {
 				this.fixtype = Integer.parseInt(mp[2]);
 			}
 			int l = mp.length;
-			
+			for (int i =3;i < l-3;i++) {
+				if (!mp[i].isEmpty()) {
+					this.sat.add(mp[i]);
+					int t = Integer.parseInt(mp[i]);
+					String type = "";
+					if (t < 33) {
+						type = "GPS";
+					} else if (t < 65) {
+						type = "SBAS";
+					} else if (t < 97) {
+						type = "GLONASS";
+					}
+					if (type != "" && !Arrays.asList(this.satSystem).contains(type)) {
+						this.satSystem.add(type);
+					}
+				}
+			}
+
 			if (!mp[l-3].isEmpty()) {
 				this.pdop = Float.parseFloat(mp[l-3]);
 			}
@@ -301,7 +338,7 @@ public class GPSLocation {
 			this.errorMessage = exc.getMessage();
 		}
 	}
-	
+
 	public void parseZDA(String message) {
 		try {
 			String[] mp = message.split(",");
@@ -317,7 +354,7 @@ public class GPSLocation {
 				int year = Integer.parseInt(mp[4]);
 				int month = Integer.parseInt(mp[3]);
 				int day = Integer.parseInt(mp[2]);
-				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); 
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 				Date currentTime = new Date();
 				this.timestamp =  Date.UTC(year, month, day, h, m, s);
 			}
@@ -326,7 +363,7 @@ public class GPSLocation {
 			this.errorMessage = exc.getMessage();
 		}
 	}
-	
+
     public void parseVTG(String message) {
     	try {
 	    	String[] mp = message.split(",");
@@ -342,7 +379,7 @@ public class GPSLocation {
 			this.errorMessage = exc.getMessage();
 		}
 	}
-    
+
     public void parseGST(String message) {
     	try {
 	    	String[] mp = message.split(",");
@@ -365,7 +402,7 @@ public class GPSLocation {
 			this.errorMessage = exc.getMessage();
 		}
     }
-	
-    
-	
+
+
+
 }

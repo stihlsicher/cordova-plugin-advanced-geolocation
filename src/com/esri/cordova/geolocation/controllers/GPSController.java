@@ -129,13 +129,14 @@ public final class GPSController implements Runnable {
             }
 
             final InitStatus gpsListener = setLocationListenerGPSProvider();
-            //final InitStatus nmeaListener = new InitStatus(); // setNMEAProvider();
-          //  final InitStatus nmeaListener = setNMEAProvider();
-            InitStatus nmeaListener = new InitStatus();
+            InitStatus nmeaListener = new InitStatus(); // setNMEAProvider();
+            //final InitStatus nmeaListener = setNMEAProvider();
+            //InitStatus nmeaListener = new InitStatus();
             if (_returnNMEAData) {
-            	nmeaListener = setNMEAListener();
+                nmeaListener = setNMEAProvider();
+//                nmeaListener = setNMEAListener();
             }
-            
+
             InitStatus satelliteListener = new InitStatus();
             if(_returnSatelliteData){
                satelliteListener = setGPSStatusListener();
@@ -219,7 +220,7 @@ public final class GPSController implements Runnable {
 
                 _locationListenerGPSProvider = null;
             }
-            
+
             if(_nmeaListener != null){
 
                 try {
@@ -310,17 +311,18 @@ public final class GPSController implements Runnable {
         return status;
     }
 
-    
+
     /* Android 5x */
     private InitStatus setNMEAListener(){
     	final InitStatus status = new InitStatus();
        try {
     	   _nmeaStatusListener = new GpsStatus.NmeaListener() {
-        		
+
         		public void onNmeaReceived(long timestamp,String message) {
         			if(!Thread.currentThread().isInterrupted()){
         				try {
-        					
+                  /* Adding Sentences to Object */
+                            gpsloc.addSentence(message);
         					/* Parsing NMEA Data to Object */
         					if (gpsloc.getUTC(message)!=null) {
         						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
@@ -333,7 +335,7 @@ public final class GPSController implements Runnable {
         						//	parsingErrors = new ArrayList<String>();
         						//	parsedTypes = new ArrayList<String>();
         							gpsloc.clear();
-        						} 
+        						}
         					}
 							/* Gehört noch zur Serie */
 							String mt = null;
@@ -382,8 +384,8 @@ public final class GPSController implements Runnable {
 		                                JSONHelper.errorJSON("NMEA", "Could not parse"
                                     + exc.getMessage() + "- "+message));*/
 							}
-        						
-        					
+
+
 		        		} catch (Exception exc) {
 	        				/*sendCallback(PluginResult.Status.ERROR,
 	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
@@ -392,11 +394,11 @@ public final class GPSController implements Runnable {
         			}
         		}
         	};
-        } catch (Exception ex) {   	
+        } catch (Exception ex) {
         	status.success = false;
         	status.exception = ex.getMessage();
-        } 
-        
+        }
+
         final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if(gpsProviderEnabled){
@@ -414,45 +416,97 @@ public final class GPSController implements Runnable {
         	status.success = false;
             status.error = ErrorMessages.GPS_UNAVAILABLE();
         }
-        
+
         return status;
 	}
-    
+
     /* Für Android 6) */
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
-       try {
+        try {
         	_nmeaListener = new OnNmeaMessageListener() {
-        		
+
         		public void onNmeaMessage(String message, long timestamp) {
-        		//	if(!Thread.currentThread().isInterrupted()){
-        				try {
-	        				nmeaMessages.add(message);
-	        				if (nmeaMessages.size() > 100) {
-	        					String ausgabeStr = "[";
-	        					for(String ausgabe : nmeaMessages)
-	        					{
-	        						if (!ausgabeStr.equalsIgnoreCase("[")) {
-	        							ausgabeStr += ",";
-	        						}
-	        						ausgabeStr += "'"+ausgabe+"'";
-	        					} 
-	        					sendCallback(PluginResult.Status.OK,
-	        							JSONHelper.nmeaJSON("NMEA", ausgabeStr, timestamp));
-	        				}
-		        		} catch (Exception exc) {
-	        				sendCallback(PluginResult.Status.ERROR,
-	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
-	                                        + exc.getMessage()));
-	        			}
-        		//	}
-        		}
+        		
+                //if(!Thread.currentThread().isInterrupted()){
+                    try {
+                        /* Adding Sentences to Object */
+                        gpsloc.addSentence(message);
+                        /* Parsing NMEA Data to Object */
+                        if (gpsloc.getUTC(message)!=null) {
+                            if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
+                                /* Auswerten des Objektes und zurücksenden! */
+                                String loc = gpsloc.getLocation(parsingErrors, parsedTypes);
+                                if (loc != null) {
+                                    sendCallback(PluginResult.Status.OK,
+                                        JSONHelper.nmeaJSON("NMEA", loc, timestamp));
+                                }
+                            //	parsingErrors = new ArrayList<String>();
+                            //	parsedTypes = new ArrayList<String>();
+                                gpsloc.clear();
+                            }
+                        }
+                        /* Gehört noch zur Serie */
+                        String mt = null;
+                        try {
+                            mt = gpsloc.messageType(message);
+                            //parsedTypes.add(mt);
+                        } catch (Exception exc) {
+                            sendCallback(PluginResult.Status.ERROR,
+                                    JSONHelper.errorJSON("NMEA", "Could not get Message type"
+                                + exc.getMessage() + "- "+message));
+                        }
+
+                        try {
+                            if (mt != null && !mt.isEmpty()) {
+                                mt = mt.toUpperCase();
+                                //parsedTypes.add(mt);
+                                if (mt.equalsIgnoreCase("GST")) {
+                                        gpsloc.parseGST(message);
+                                        if (gpsloc.parseError()) {
+                                            parsingErrors.add(gpsloc.getError());
+                                        }
+                                } else if (mt.equalsIgnoreCase("GGA")) {
+                                        gpsloc.parseGGA(message);
+                                        if (gpsloc.parseError()) {
+                                            parsingErrors.add(gpsloc.getError());
+                                        }
+                                } else if (mt.equalsIgnoreCase("VTG")) {
+                                        gpsloc.parseVTG(message);
+                                        if (gpsloc.parseError()) {
+                                            parsingErrors.add(gpsloc.getError());
+                                        }
+                                } else if (mt.equalsIgnoreCase("ZDA")) {
+                                        gpsloc.parseZDA(message);
+                                        if (gpsloc.parseError()) {
+                                            parsingErrors.add(gpsloc.getError());
+                                        }
+                                } else if (mt.equalsIgnoreCase("GSA")) {
+                                        gpsloc.parseGSA(message);
+                                        if (gpsloc.parseError()) {
+                                            parsingErrors.add(gpsloc.getError());
+                                        }
+                                }
+                            }
+                        } catch (Exception exc) {
+                            sendCallback(PluginResult.Status.ERROR,
+                                    JSONHelper.errorJSON("NMEA", "Could not parse"
+                                + exc.getMessage() + "- "+message));
+                        }
+
+
+                    } catch (Exception exc) {
+                        sendCallback(PluginResult.Status.ERROR,
+                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
+                                        + exc.getMessage()));
+                    }
+                };
         	};
-        } catch (Exception ex) {   	
+        } catch (Exception ex) {
         	status.success = false;
         	status.exception = ex.getMessage();
-        } 
-        
+        }
+
         final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if(gpsProviderEnabled){
@@ -470,7 +524,7 @@ public final class GPSController implements Runnable {
         	status.success = false;
             status.error = ErrorMessages.GPS_UNAVAILABLE();
         }
-        
+
         return status;
 	}
 
@@ -487,10 +541,10 @@ public final class GPSController implements Runnable {
 	                    coordinate.latitude = location.getLatitude();
 	                    coordinate.longitude = location.getLongitude();
 	                    coordinate.accuracy = location.getAccuracy();
-	
+
 	                    // Get the size of the buffer
 	                    final int size = _locationDataBuffer.add(coordinate);
-	
+
 	                    final Coordinate center = _locationDataBuffer.getGeographicCenter();
 	                    sendCallback(PluginResult.Status.OK,
 	                            JSONHelper.locationJSON(
@@ -503,7 +557,7 @@ public final class GPSController implements Runnable {
 	                                    center.accuracy,
 	                                    size)
 	                    );
-	                
+
 	                }
 	                else {
 	                    sendCallback(PluginResult.Status.OK,
