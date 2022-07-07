@@ -311,6 +311,14 @@ public class GPSLocation {
 						type = "SBAS";
 					} else if (t < 97) {
 						type = "GLONASS";
+					} else if (t > 172 && t <  183) {
+						type = "IMES";
+					} else if (t > 192 && t <  201) {
+						type = "QZSS";
+					} else if ((t > 200 && t <  236) || (t > 400 && t <  438))  {
+						type = "BeiDou";
+					} else if (t > 300 && t <  337) {
+						type = "GALILEO";
 					}
 					if (type != "" && !Arrays.asList(this.satSystem).contains(type)) {
 						this.satSystem.add(type);
