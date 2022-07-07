@@ -27,6 +27,7 @@ import android.location.OnNmeaMessageListener;
 import android.location.GpsStatus.NmeaListener;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Build;
 import android.util.Log;
 
 import com.esri.cordova.geolocation.model.Coordinate;
@@ -133,13 +134,16 @@ public final class GPSController implements Runnable {
             //final InitStatus nmeaListener = setNMEAProvider();
             //InitStatus nmeaListener = new InitStatus();
             if (_returnNMEAData) {
-                nmeaListener = setNMEAProvider();
-//                nmeaListener = setNMEAListener();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    nmeaListener = setNMEAProvider();
+                } else {
+                    nmeaListener = setNMEAListener();
+                }  
             }
 
             InitStatus satelliteListener = new InitStatus();
             if(_returnSatelliteData){
-               satelliteListener = setGPSStatusListener();
+               //satelliteListener = setGPSStatusListener();
             }
 
             if(!gpsListener.success || !satelliteListener.success || !nmeaListener.success){
@@ -167,28 +171,8 @@ public final class GPSController implements Runnable {
                 }
             }
             else {
-                // Return cache immediate if requested, otherwise wait for a location provider
-                if(_returnCache){
-
-                    Location location = null;
-
-                    try {
-                        location = _locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    }
-                    catch(SecurityException exc){
-                        Log.e(TAG, exc.getMessage());
-                    }
-
-                    final String parsedLocation;
-
-                    // If the provider is disabled or currently unavailable then null is returned
-                    // Some devices will return null if the GPS is still warming up and hasn't gotten
-                    // a full signal lock yet.
-                    if(location != null) {
-                        parsedLocation = JSONHelper.locationJSON(LocationManager.GPS_PROVIDER, location, true);
-                        sendCallback(PluginResult.Status.OK, parsedLocation);
-                    }
-                }
+                
+                
             }
         }
         else {
@@ -420,7 +404,7 @@ public final class GPSController implements Runnable {
         return status;
 	}
 
-    /* Für Android 6) */
+    /* Für Android 6 */
     private InitStatus setNMEAProvider(){
     	final InitStatus status = new InitStatus();
         try {
@@ -513,7 +497,7 @@ public final class GPSController implements Runnable {
         	try{
                 Log.d(TAG, "Starting NMEA");
                 // Register the listener with the Location Manager to receive location updates
-            //    _locationManager.addNmeaListener(_nmeaListener);
+                _locationManager.addNmeaListener(_nmeaListener);
             }
             catch(SecurityException exc){
                 Log.e(TAG, "Unable to start NMEA listener. " + exc.getMessage());

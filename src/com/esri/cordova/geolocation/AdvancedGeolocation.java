@@ -29,9 +29,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.esri.cordova.geolocation.controllers.CellLocationController;
 import com.esri.cordova.geolocation.controllers.GPSController;
-import com.esri.cordova.geolocation.controllers.NetworkLocationController;
 import com.esri.cordova.geolocation.controllers.PermissionsController;
 import com.esri.cordova.geolocation.fragments.GPSAlertDialogFragment;
 import com.esri.cordova.geolocation.fragments.NetworkUnavailableDialogFragment;
@@ -78,8 +76,6 @@ public class AdvancedGeolocation extends CordovaPlugin{
     private static int _bufferSize = 0;
 
     private static GPSController _gpsController = null;
-    private static NetworkLocationController _networkLocationController = null;
-    private static CellLocationController _cellLocationController = null;
     private static CordovaInterface _cordova;
     private static Activity _cordovaActivity;
     private static CallbackContext _callbackContext;
@@ -216,13 +212,11 @@ public class AdvancedGeolocation extends CordovaPlugin{
         }
         else {
             final LocationManager _locationManager = (LocationManager) _cordovaActivity.getSystemService(Context.LOCATION_SERVICE);
-            final boolean networkLocationEnabled = _locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             final boolean gpsEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            final boolean networkEnabled = isInternetConnected(_cordovaActivity.getApplicationContext());
-
+            
             // If warnings are disabled then skip initializing alert dialog fragments
-            if(!_noWarn && (!networkLocationEnabled || !gpsEnabled || !networkEnabled)){
-                alertDialog(gpsEnabled, networkLocationEnabled, networkEnabled);
+            if(!_noWarn && ( !gpsEnabled )){
+                alertDialog(gpsEnabled);
             }
             else {
                 startLocation();
@@ -248,51 +242,20 @@ public class AdvancedGeolocation extends CordovaPlugin{
                     _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _returnNMEAData, _returnLocationData, _buffer, _bufferSize);
             threadPool.execute(_gpsController);
 
-            _networkLocationController = new NetworkLocationController(
-                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _buffer, _bufferSize);
-            threadPool.execute(_networkLocationController);
-
-            // Reference: https://developer.android.com/reference/android/telephony/TelephonyManager.html#getAllCellInfo()
-            // Reference: https://developer.android.com/reference/android/telephony/CellIdentityWcdma.html (added at API 18)
-            if (Build.VERSION.SDK_INT < MIN_API_LEVEL){
-                cellDataNotAllowed();
-            }
-            else {
-                _cellLocationController = new CellLocationController(networkEnabled, _signalStrength, _cordova,_callbackContext);
-                threadPool.execute(_cellLocationController);
-            }
+          
+          
         }
         if(_providers.equalsIgnoreCase(PROVIDERS_SOME)){
             _gpsController = new GPSController(
                     _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _returnNMEAData, _returnLocationData, _buffer, _bufferSize);
             threadPool.execute(_gpsController);
 
-            _networkLocationController = new NetworkLocationController(
-                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _buffer, _bufferSize);
-            threadPool.execute(_networkLocationController);
-
+           
         }
         if(_providers.equalsIgnoreCase(PROVIDERS_GPS)){
             _gpsController = new GPSController(
                     _cordova, _callbackContext, _minDistance, _minTime, _useCache, _returnSatelliteData, _returnNMEAData, _returnLocationData, _buffer, _bufferSize);
             threadPool.execute(_gpsController);
-        }
-        if(_providers.equalsIgnoreCase(PROVIDERS_NETWORK)){
-            _networkLocationController = new NetworkLocationController(
-                    _cordova, _callbackContext, _minDistance, _minTime, _useCache, _buffer, _bufferSize);
-            threadPool.execute(_networkLocationController);
-        }
-        if(_providers.equalsIgnoreCase(PROVIDERS_CELL)){
-
-            // Reference: https://developer.android.com/reference/android/telephony/TelephonyManager.html#getAllCellInfo()
-            // Reference: https://developer.android.com/reference/android/telephony/CellIdentityWcdma.html
-            if (Build.VERSION.SDK_INT < MIN_API_LEVEL){
-                cellDataNotAllowed();
-            }
-            else {
-                _cellLocationController = new CellLocationController(networkEnabled,_signalStrength ,_cordova,_callbackContext);
-                threadPool.execute(_cellLocationController);
-            }
         }
     }
 
@@ -307,22 +270,6 @@ public class AdvancedGeolocation extends CordovaPlugin{
 
             // make sure there are no references
             _gpsController = null;
-        }
-        if(_networkLocationController != null){
-            // Gracefully attempt to stop location
-            _networkLocationController.stopLocation();
-
-            // make sure there are no references
-            _networkLocationController = null;
-        }
-
-        // CellLocationController does not require LocationManager
-        if(_cellLocationController != null){
-            // Gracefully attempt to stop location
-            _cellLocationController.stopLocation();
-
-            // make sure there are no references
-            _cellLocationController = null;
         }
 
         Log.d(TAG, "Stopping geolocation");
@@ -480,32 +427,7 @@ public class AdvancedGeolocation extends CordovaPlugin{
         }
     }
 
-    /**
-     * Check for <code>Network</code> connection.
-     * Checks for generic Exceptions and writes them to logcat as <code>CheckConnectivity Exception</code>.
-     * Make sure AndroidManifest.xml has appropriate permissions.
-     * @param con Application context
-     * @return Boolean
-     */
-    private Boolean isInternetConnected(Context con){
-
-        Boolean connected = false;
-
-        try{
-            final ConnectivityManager connectivityManager = (ConnectivityManager) con.getSystemService(Context.CONNECTIVITY_SERVICE);
-            final NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-            if(networkInfo.isConnected()){
-                connected = true;
-            }
-        }
-        catch(Exception e){
-            Log.e(TAG,"CheckConnectivity Exception: " + e.getMessage());
-        }
-
-        return connected;
-    }
-
+    
     private void parseArgs(JSONArray args){
         Log.d(TAG,"Execute args: " + args.toString());
         if(args.length() > 0){

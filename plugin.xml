@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-advanced-geolocation"
-    version="1.1.1">
+    version="1.2.0">
 
     <name>Cordova Advanced Geolocation Plugin - Android</name>
     <description>
@@ -21,9 +21,6 @@
     <platform name="android">
 
         <config-file target="AndroidManifest.xml" parent="/*">
-            <uses-permission android:name="android.permission.INTERNET" />
-            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
             <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
@@ -47,12 +44,8 @@
         <!-- Copy over the Java source files -->
         <source-file src="src/com/esri/cordova/geolocation/AdvancedGeolocation.java" target-dir="src/com/esri/cordova/geolocation" />
 
-        <source-file src="src/com/esri/cordova/geolocation/controllers/CellLocationController.java" target-dir="src/com/esri/cordova/geolocation/controllers" />
         <source-file src="src/com/esri/cordova/geolocation/controllers/GPSController.java" target-dir="src/com/esri/cordova/geolocation/controllers" />
-        <source-file src="src/com/esri/cordova/geolocation/controllers/NetworkLocationController.java" target-dir="src/com/esri/cordova/geolocation/controllers" />
         <source-file src="src/com/esri/cordova/geolocation/controllers/PermissionsController.java" target-dir="src/com/esri/cordova/geolocation/controllers" />
-
-        <source-file src="src/com/esri/cordova/geolocation/listeners/SignalStrengthListener.java" target-dir="src/com/esri/cordova/geolocation/listeners" />
 
         <source-file src="src/com/esri/cordova/geolocation/fragments/GPSAlertDialogFragment.java" target-dir="src/com/esri/cordova/geolocation/fragments" />
         <source-file src="src/com/esri/cordova/geolocation/fragments/NetworkUnavailableDialogFragment.java" target-dir="src/com/esri/cordova/geolocation/fragments" />

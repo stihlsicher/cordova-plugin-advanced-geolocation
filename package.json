@@ -7,24 +7,21 @@
 		"location",
 		"geolocation",
 		"satellite",
-		"network",
-		"cellular",
 		"triangulation",
-		"signal-strength",
 		"ecosystem:cordova",
 		"cordova-android",
 		"cordova",
 		"phonegap"
 	],
-	"homepage": "https://github.com/esri/cordova-plugin-advanced-geolocation/blob/master/README.md",
+	"homepage": "https://github.com/stihlsicher/cordova-plugin-advanced-geolocation/blob/master/README.md",
 	"bugs": {
-		"url": "https://github.com/esri/cordova-plugin-advanced-geolocation/issues"
+		"url": "https://github.com/stihlsicher/cordova-plugin-advanced-geolocation/issues"
 	},
 	"license": "Apache-2.0",
 	"author": "Andy Gup. @agup",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/esri/cordova-plugin-advanced-geolocation.git"
+		"url": "https://github.com/stihlsicher/cordova-plugin-advanced-geolocation.git"
 	},
 	"engines": {},
 	"cordova": {
