@@ -215,7 +215,7 @@ public class AdvancedGeolocation extends CordovaPlugin{
             
             // If warnings are disabled then skip initializing alert dialog fragments
             if(!_noWarn && ( !gpsEnabled )){
-                alertDialog(gpsEnabled);
+                alertDialog(gpsEnabled, false, false);
             }
             else {
                 startLocation();
