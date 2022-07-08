@@ -230,7 +230,7 @@ public class AdvancedGeolocation extends CordovaPlugin{
         // to make sure to set pluginResult.setKeepCallback(true);
 
         // We want to prevent multiple instances of controllers from running!
-        if(_gpsController != null || _networkLocationController != null || _cellLocationController != null){
+        if(_gpsController != null ){
             stopLocation();
         }
 

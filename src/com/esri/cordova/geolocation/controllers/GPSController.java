@@ -48,8 +48,7 @@ public final class GPSController implements Runnable {
     private static LocationListener _locationListenerGPSProvider = null;
     private static OnNmeaMessageListener _nmeaListener = null;
     private static GpsStatus.NmeaListener _nmeaStatusListener = null;
-    private static GpsStatus.Listener _gpsStatusListener = null;
-
+    
     private static CallbackContext _callbackContext; // Threadsafe
     private static CordovaInterface _cordova;
 
@@ -95,7 +94,8 @@ public final class GPSController implements Runnable {
 
     public void run(){
         // Reference: http://developer.android.com/reference/android/os/Process.html#THREAD_PRIORITY_BACKGROUND
-        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        // android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DEFAULT);
 
         // We are running a Looper to allow the Cordova CallbackContext to be passed within the Thread as a message.
         if(Looper.myLooper() == null){
@@ -119,17 +119,14 @@ public final class GPSController implements Runnable {
                     sendCallback(PluginResult.Status.ERROR,
                             JSONHelper.errorJSON("TEST", "Failing gracefully after detecting an uncaught exception on GPSController thread. "+ thread.toString() + " - "
                                     + throwable.getMessage()+"Stacktrace: "+throwable.getStackTrace().toString()));
-                  /*  sendCallback(PluginResult.Status.ERROR,
-                            JSONHelper.errorJSON(LocationManager.GPS_PROVIDER, ErrorMessages.UNCAUGHT_THREAD_EXCEPTION()));*/
+
                     stopLocation();
                 }
             });
 
-            if(_buffer) {
-                _locationDataBuffer = new LocationDataBuffer(_bufferSize);
-            }
 
-            final InitStatus gpsListener = setLocationListenerGPSProvider();
+            final InitStatus gpsListener = new InitStatus(); 
+            gpsListener.success = true;//setLocationListenerGPSProvider();
             InitStatus nmeaListener = new InitStatus(); // setNMEAProvider();
             //final InitStatus nmeaListener = setNMEAProvider();
             //InitStatus nmeaListener = new InitStatus();
@@ -141,12 +138,8 @@ public final class GPSController implements Runnable {
                 }  
             }
 
-            InitStatus satelliteListener = new InitStatus();
-            if(_returnSatelliteData){
-               //satelliteListener = setGPSStatusListener();
-            }
 
-            if(!gpsListener.success || !satelliteListener.success || !nmeaListener.success){
+            if(!gpsListener.success ||  !nmeaListener.success){
                 if (!nmeaListener.success) {
 	            	if (nmeaListener.exception == null) {
 	                	sendCallback(PluginResult.Status.ERROR,
@@ -188,11 +181,6 @@ public final class GPSController implements Runnable {
         if(_locationManager != null){
             Log.d(TAG, "Attempting to stop gps geolocation");
 
-            if(_gpsStatusListener != null){
-                _locationManager.removeGpsStatusListener(_gpsStatusListener);
-                _gpsStatusListener = null;
-            }
-
             if(_locationListenerGPSProvider != null){
 
                 try {
@@ -219,10 +207,6 @@ public final class GPSController implements Runnable {
 
             _locationManager = null;
 
-            // Clear all elements from the buffer
-            if(_locationDataBuffer != null) {
-                _locationDataBuffer.clear();
-            }
 
             try {
                 Thread.currentThread().interrupt();
@@ -251,158 +235,6 @@ public final class GPSController implements Runnable {
         }
     }
 
-    private static InitStatus setGPSStatusListener(){
-
-        // IMPORTANT: The GpsStatus.Listener Interface is deprecated at API 24.
-        // Reference: https://developer.android.com/reference/android/location/package-summary.html
-        _gpsStatusListener = new GpsStatus.Listener() {
-
-            @Override
-            public void onGpsStatusChanged(int event) {
-                Log.d(TAG, "GPS status changed.");
-
-                // Ignore if GPS_EVENT_STARTED or GPS_EVENT_STOPPED
-                if(!Thread.currentThread().isInterrupted() &&
-                        (event == GpsStatus.GPS_EVENT_FIRST_FIX ||
-                                event == GpsStatus.GPS_EVENT_SATELLITE_STATUS) &&
-                                        _locationManager != null){
-                    sendCallback(PluginResult.Status.OK,
-                            JSONHelper.satelliteDataJSON(_locationManager.getGpsStatus(null)));
-                }
-            }
-        };
-
-        final InitStatus status = new InitStatus();
-
-        final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if(gpsProviderEnabled){
-            try{
-                _locationManager.addGpsStatusListener(_gpsStatusListener);
-            }
-            // if the ACCESS_FINE_LOCATION permission is not present
-            catch(SecurityException exc){
-                status.success = false;
-                status.exception = exc.getMessage();
-            }
-        }
-        else {
-            //GPS not enabled
-            status.success = false;
-            status.error = ErrorMessages.GPS_UNAVAILABLE();
-        }
-
-        return status;
-    }
-
-
-    /* Android 5x */
-    private InitStatus setNMEAListener(){
-    	final InitStatus status = new InitStatus();
-       try {
-    	   _nmeaStatusListener = new GpsStatus.NmeaListener() {
-
-        		public void onNmeaReceived(long timestamp,String message) {
-        			if(!Thread.currentThread().isInterrupted()){
-        				try {
-                  /* Adding Sentences to Object */
-                            gpsloc.addSentence(message);
-        					/* Parsing NMEA Data to Object */
-        					if (gpsloc.getUTC(message)!=null) {
-        						if(!gpsloc.checkUTC(gpsloc.getUTC(message))) {
-        							/* Auswerten des Objektes und zurücksenden! */
-        							String loc = gpsloc.getLocation(parsingErrors, parsedTypes);
-        							if (loc != null) {
-        								sendCallback(PluginResult.Status.OK,
-    	        							JSONHelper.nmeaJSON("NMEA", loc, timestamp));
-        							}
-        						//	parsingErrors = new ArrayList<String>();
-        						//	parsedTypes = new ArrayList<String>();
-        							gpsloc.clear();
-        						}
-        					}
-							/* Gehört noch zur Serie */
-							String mt = null;
-							try {
-								mt = gpsloc.messageType(message);
-    							//parsedTypes.add(mt);
-    						} catch (Exception exc) {
-								sendCallback(PluginResult.Status.ERROR,
-		                                JSONHelper.errorJSON("NMEA", "Could not get Message type"
-                                    + exc.getMessage() + "- "+message));
-							}
-
-							try {
-								if (mt != null && !mt.isEmpty()) {
-    								mt = mt.toUpperCase();
-    								//parsedTypes.add(mt);
-        							if (mt.equalsIgnoreCase("GST")) {
-        									gpsloc.parseGST(message);
-        									if (gpsloc.parseError()) {
-        										parsingErrors.add(gpsloc.getError());
-        									}
-        							} else if (mt.equalsIgnoreCase("GGA")) {
-        									gpsloc.parseGGA(message);
-        									if (gpsloc.parseError()) {
-        										parsingErrors.add(gpsloc.getError());
-        									}
-        							} else if (mt.equalsIgnoreCase("VTG")) {
-        									gpsloc.parseVTG(message);
-        									if (gpsloc.parseError()) {
-        										parsingErrors.add(gpsloc.getError());
-        									}
-        							} else if (mt.equalsIgnoreCase("ZDA")) {
-        									gpsloc.parseZDA(message);
-        									if (gpsloc.parseError()) {
-        										parsingErrors.add(gpsloc.getError());
-        									}
-        							} else if (mt.equalsIgnoreCase("GSA")) {
-        									gpsloc.parseGSA(message);
-        									if (gpsloc.parseError()) {
-        										parsingErrors.add(gpsloc.getError());
-        									}
-        							}
-    							}
-							} catch (Exception exc) {
-								/*sendCallback(PluginResult.Status.ERROR,
-		                                JSONHelper.errorJSON("NMEA", "Could not parse"
-                                    + exc.getMessage() + "- "+message));*/
-							}
-
-
-		        		} catch (Exception exc) {
-	        				/*sendCallback(PluginResult.Status.ERROR,
-	                                JSONHelper.errorJSON("NMEA", "Meine Ausgabe - vielleicht mehr info"
-	                                        + exc.getMessage()));*/
-	        			}
-        			}
-        		}
-        	};
-        } catch (Exception ex) {
-        	status.success = false;
-        	status.exception = ex.getMessage();
-        }
-
-        final Boolean gpsProviderEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if(gpsProviderEnabled){
-        	try{
-                Log.d(TAG, "Starting NMEA");
-                // Register the listener with the Location Manager to receive location updates
-                _locationManager.addNmeaListener(_nmeaStatusListener);
-            }
-            catch(SecurityException exc){
-                Log.e(TAG, "Unable to start NMEA listener. " + exc.getMessage());
-                status.success = false;
-                status.exception = exc.getMessage();
-            }
-        } else {
-        	status.success = false;
-            status.error = ErrorMessages.GPS_UNAVAILABLE();
-        }
-
-        return status;
-	}
 
     /* Für Android 6 */
     private InitStatus setNMEAProvider(){
@@ -531,15 +363,7 @@ public final class GPSController implements Runnable {
 
 	                    final Coordinate center = _locationDataBuffer.getGeographicCenter();
 	                    sendCallback(PluginResult.Status.OK,
-	                            JSONHelper.locationJSON(
-	                                    LocationManager.GPS_PROVIDER,
-	                                    location,
-	                                    false,
-	                                    _buffer,
-	                                    center.latitude,
-	                                    center.longitude,
-	                                    center.accuracy,
-	                                    size)
+	                            "GEOOBJEKT"
 	                    );
 
 	                }
