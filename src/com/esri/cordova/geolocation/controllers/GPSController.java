@@ -30,12 +30,10 @@ import android.os.Looper;
 import android.os.Build;
 import android.util.Log;
 
-import com.esri.cordova.geolocation.model.Coordinate;
 import com.esri.cordova.geolocation.model.InitStatus;
-import com.esri.cordova.geolocation.model.LocationDataBuffer;
 import com.esri.cordova.geolocation.utils.ErrorMessages;
-import com.esri.cordova.geolocation.utils.JSONHelper;
 import com.esri.cordova.geolocation.utils.GPSLocation;
+import com.esri.cordova.geolocation.utils.JSONHelper;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -60,7 +58,6 @@ public final class GPSController implements Runnable {
     private static boolean _returnSatelliteData = false;
     private static boolean _returnNMEAData = false;
     private static boolean _returnLocationData = false;
-    private static LocationDataBuffer _locationDataBuffer = null;
     private static GPSLocation gpsloc = new GPSLocation();
 
     private static final String TAG = "GeolocationPlugin";

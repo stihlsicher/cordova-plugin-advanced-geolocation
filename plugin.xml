@@ -55,6 +55,7 @@
 
         <source-file src="src/com/esri/cordova/geolocation/utils/ErrorMessages.java" target-dir="src/com/esri/cordova/geolocation/utils" />
         <source-file src="src/com/esri/cordova/geolocation/utils/GPSLocation.java" target-dir="src/com/esri/cordova/geolocation/utils" />
+        <source-file src="src/com/esri/cordova/geolocation/utils/JSONHelper.java" target-dir="src/com/esri/cordova/geolocation/utils" />
 
         <js-module src="www/AdvancedGeolocation.js" name="AdvancedGeolocation">
             <clobbers target="AdvancedGeolocation" />

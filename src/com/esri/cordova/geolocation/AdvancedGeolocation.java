@@ -32,7 +32,6 @@ import android.util.Log;
 import com.esri.cordova.geolocation.controllers.GPSController;
 import com.esri.cordova.geolocation.controllers.PermissionsController;
 import com.esri.cordova.geolocation.fragments.GPSAlertDialogFragment;
-import com.esri.cordova.geolocation.fragments.NetworkUnavailableDialogFragment;
 import com.esri.cordova.geolocation.utils.ErrorMessages;
 import com.esri.cordova.geolocation.utils.JSONHelper;
 
