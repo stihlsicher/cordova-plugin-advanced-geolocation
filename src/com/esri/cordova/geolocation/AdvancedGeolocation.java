@@ -233,7 +233,6 @@ public class AdvancedGeolocation extends CordovaPlugin{
             stopLocation();
         }
 
-        final boolean networkEnabled = isInternetConnected(_cordovaActivity.getApplicationContext());
         ExecutorService threadPool = cordova.getThreadPool();
 
         if(_providers.equalsIgnoreCase(PROVIDERS_ALL)){
@@ -417,13 +416,6 @@ public class AdvancedGeolocation extends CordovaPlugin{
             gpsFragment.show(_cordovaActivity.getFragmentManager(), "GPSAlert");
         }
 
-        if(!cellularEnabled){
-            sendCallback(PluginResult.Status.ERROR,
-                    JSONHelper.errorJSON(PROVIDER_PRIMARY, ErrorMessages.CELL_DATA_NOT_AVAILABLE()));
-
-            final DialogFragment networkUnavailableFragment = new NetworkUnavailableDialogFragment();
-            networkUnavailableFragment.show(_cordovaActivity.getFragmentManager(), "NetworkUnavailableAlert");
-        }
     }
 
     

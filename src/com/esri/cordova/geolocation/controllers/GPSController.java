@@ -128,11 +128,7 @@ public final class GPSController implements Runnable {
             //final InitStatus nmeaListener = setNMEAProvider();
             //InitStatus nmeaListener = new InitStatus();
             if (_returnNMEAData) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    nmeaListener = setNMEAProvider();
-                } else {
-                    nmeaListener = setNMEAListener();
-                }  
+                nmeaListener = setNMEAProvider();
             }
 
 
@@ -349,26 +345,9 @@ public final class GPSController implements Runnable {
 
             public void onLocationChanged(Location location) {
                 if (_returnLocationData) {
-	                if(_buffer && !Thread.currentThread().isInterrupted()){
-	                    final Coordinate coordinate = new Coordinate();
-	                    coordinate.latitude = location.getLatitude();
-	                    coordinate.longitude = location.getLongitude();
-	                    coordinate.accuracy = location.getAccuracy();
-
-	                    // Get the size of the buffer
-	                    final int size = _locationDataBuffer.add(coordinate);
-
-	                    final Coordinate center = _locationDataBuffer.getGeographicCenter();
-	                    sendCallback(PluginResult.Status.OK,
-	                            "GEOOBJEKT"
-	                    );
-
-	                }
-	                else {
-	                    sendCallback(PluginResult.Status.OK,
-	                            JSONHelper.locationJSON(LocationManager.GPS_PROVIDER, location, false));
-	                }
-                }
+	                sendCallback(PluginResult.Status.OK,
+                            JSONHelper.locationJSON(LocationManager.GPS_PROVIDER, location, false));
+	            }
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
